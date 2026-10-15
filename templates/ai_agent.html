@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FinCare AI Agent – FinCare AI</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/branding/fincare-favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/images/branding/fincare-favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/images/branding/fincare-favicon-192.png" />
+  <link rel="shortcut icon" href="/static/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8fafc;
+      --sidebar: #0b152d;
+      --sidebar-w: 248px;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #1d4ed8;
+      --primary-light: #3b82f6;
+      --accent: #2563eb;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --green: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+    }
+    body { font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:var(--bg); color:var(--text); display:flex; min-height:100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: padding 0.22s ease;
+    }
+
+    .brand-logo-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      object-fit: contain;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      width: 72px;
+    }
+    .sidebar.collapsed .sidebar-brand {
+      justify-content: center;
+      padding: 20px 10px;
+    }
+    .sidebar.collapsed .brand-text {
+      display: none;
+    }
+    .sidebar.collapsed .nav-item span,
+    .sidebar.collapsed .nav-section-label,
+    .sidebar.collapsed .user-info-text,
+    .sidebar.collapsed .logout-btn span {
+      display: none;
+    }
+    .sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 12px;
+      position: relative;
+    }
+    .sidebar.collapsed .nav-item:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 78px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #0f172a;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.15);
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .sidebar.collapsed .user-info {
+      justify-content: center;
+      padding: 4px 0 10px;
+    }
+    .sidebar.collapsed .logout-btn {
+      justify-content: center;
+      padding: 8px 0;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+
+    .brand-name em {
+      color: #38bdf8;
+      font-style: normal;
+    }
+
+    .brand-tagline {
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 18px 12px;
+      overflow-y: auto;
+    }
+
+    .nav-section-label {
+      color: rgba(255, 255, 255, 0.38);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 12px 10px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 13.5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      margin-bottom: 3px;
+    }
+
+    .nav-item i {
+      width: 18px;
+      text-align: center;
+      font-size: 15px;
+      color: #94a3b8;
+      transition: color 0.15s ease;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    .nav-item:hover i {
+      color: #ffffff;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(6, 182, 212, 0.2));
+      color: #ffffff;
+      font-weight: 600;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .nav-item.active i {
+      color: #38bdf8;
+    }
+
+    .sidebar-footer {
+      padding: 16px 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 6px 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .user-info-text strong {
+      color: #ffffff;
+      font-size: 13px;
+      display: block;
+      font-weight: 600;
+    }
+
+    .user-info-text span {
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 11px;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12.5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.18);
+      color: #f87171;
+    }
+
+    html, body {
+      overflow-x: hidden;
+    }
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 28px 36px 40px;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - var(--sidebar-w));
+      max-width: calc(100% - var(--sidebar-w));
+      min-width: 0;
+      box-sizing: border-box;
+      transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body.sidebar-collapsed .main {
+      margin-left: 72px;
+      width: calc(100% - 72px);
+      max-width: calc(100% - 72px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      flex-wrap: nowrap;
+      gap: 16px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .topbar-left h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+    }
+
+    .topbar-left p {
+      color: var(--muted);
+      font-size: 13.5px;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      flex-wrap: nowrap;
+    }
+
+    .sidebar-toggle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .sidebar-toggle-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: var(--primary);
+    }
+
+    .btn-icon-topbar {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      font-size: 15px;
+      transition: all 0.15s ease;
+    }
+    .btn-icon-topbar:hover {
+      color: var(--primary);
+      border-color: #bfdbfe;
+      background: #eff6ff;
+    }
+    .notif-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+    .notif-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 340px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      overflow: hidden;
+      animation: menuPop 0.15s ease-out;
+    }
+    @keyframes menuPop {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .notif-menu.open { display: flex; }
+    .notif-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .notif-header strong { font-size: 13.5px; color: var(--text); }
+    .notif-clear-btn { background: none; border: none; color: var(--primary); font-size: 11.5px; font-weight: 600; cursor: pointer; }
+    .notif-list { max-height: 290px; overflow-y: auto; }
+    .notif-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f8fafc;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .notif-item:hover { background: #f8fafc; }
+    .notif-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .notif-item-content { flex: 1; min-width: 0; }
+    .notif-item-title { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .notif-item-desc { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .notif-item-time { font-size: 10px; color: #94a3b8; margin-top: 3px; }
+    .notif-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 12.5px; }
+    .notif-item.unread { background: #f8fafc; }
+    .unread-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin-left: 6px;
+    }
+
+    .btn-profile-topbar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      flex-shrink: 0;
+    }
+    .btn-profile-topbar:hover {
+      transform: scale(1.06);
+    }
+    .topbar-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    }
+    .profile-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 230px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      padding: 6px;
+      animation: menuPop 0.15s ease-out;
+    }
+    .profile-menu.open { display: flex; }
+    .profile-menu-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 4px;
+    }
+    .profile-menu-header strong { display: block; font-size: 13px; color: var(--text); }
+    .profile-menu-header small { color: var(--muted); font-size: 11px; }
+    .profile-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.12s;
+    }
+    .profile-menu-item:hover { background: #f1f5f9; }
+    .profile-menu-divider { height: 1px; background: #f1f5f9; margin: 4px 0; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: #fff;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-card-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-card-header h3 { font-size: 16px; font-weight: 800; color: var(--text); display:flex; align-items:center; gap:8px; }
+    .modal-card-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: #f1f5f9;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card-close:hover { background: #e2e8f0; color: var(--text); }
+    .modal-card-body { padding: 22px; }
+
+    .sp-chip { background:#eff6ff; border:1px solid #bfdbfe; color:var(--primary); font-size:12px; font-weight:700; padding:6px 14px; border-radius:20px; display:flex; align-items:center; gap:7px; }
+
+    /* Agent Cards row */
+    .agents-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:22px; }
+    .agent-card { background:var(--card); border-radius:16px; padding:18px 14px; box-shadow:0 1px 3px rgba(0,0,0,0.04); border:1px solid var(--border); text-align:center; position:relative; overflow:hidden; transition:transform .15s ease,box-shadow .15s ease; }
+    .agent-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(15,23,42,0.08); }
+    .agent-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3.5px; }
+    .agent-card.a1::after { background:linear-gradient(90deg,#2563eb,#06b6d4); }
+    .agent-card.a2::after { background:linear-gradient(90deg,#10b981,#34d399); }
+    .agent-card.a3::after { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
+    .agent-card.a4::after { background:linear-gradient(90deg,#8b5cf6,#a78bfa); }
+    .agent-card.a5::after { background:linear-gradient(90deg,#ef4444,#f87171); }
+    .agent-circle { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; margin:0 auto 10px; }
+    .a1 .agent-circle { background:#eff6ff; color:#2563eb; }
+    .a2 .agent-circle { background:#f0fdf4; color:#16a34a; }
+    .a3 .agent-circle { background:#fffbeb; color:#d97706; }
+    .a4 .agent-circle { background:#faf5ff; color:#7c3aed; }
+    .a5 .agent-circle { background:#fef2f2; color:#dc2626; }
+    .agent-card h4 { font-size:13.5px; font-weight:700; color:var(--text); margin-bottom:4px; }
+    .agent-card p { font-size:11px; color:var(--muted); line-height:1.45; margin-bottom:10px; min-height:32px; }
+    .agent-status { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+    .agent-status.active { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+    .agent-status.standby { background:#f8fafc; color:var(--muted); border:1px solid var(--border); }
+    .online-dot { width:6px; height:6px; border-radius:50%; background:#22c55e; display:inline-block; }
+
+    /* Main grid */
+    .main-grid { display:grid; grid-template-columns:1fr 380px; gap:20px; flex:1; }
+
+    /* Chat card */
+    .chat-card { background:var(--card); border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,0.04); border:1px solid var(--border); display:flex; flex-direction:column; min-height:540px; }
+    .chat-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; }
+    .chat-bot-avatar { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,var(--primary),var(--accent-cyan)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px; flex-shrink:0; }
+    .chat-bot-info strong { font-size:14px; color:var(--text); display:block; font-weight:700; }
+    .chat-bot-info span { font-size:12px; color:var(--muted); }
+    .online-ind { width:7px; height:7px; border-radius:50%; background:#22c55e; display:inline-block; margin-right:5px; }
+    .chat-messages { flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:14px; }
+    .msg { display:flex; gap:10px; max-width:88%; }
+    .msg.ai { align-self:flex-start; }
+    .msg.user { align-self:flex-end; flex-direction:row-reverse; }
+    .msg-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+    .msg.ai .msg-icon { background:#eff6ff; color:var(--primary); }
+    .msg.user .msg-icon { background:#e2e8f0; color:var(--muted); }
+    .msg-bubble { padding:12px 16px; border-radius:14px; font-size:13.5px; line-height:1.6; }
+    .msg.ai .msg-bubble { background:#f8fafc; border:1px solid var(--border); color:var(--text); border-bottom-left-radius:4px; }
+    .msg.user .msg-bubble { background:linear-gradient(135deg,var(--accent),#1d4ed8); color:#fff; border-bottom-right-radius:4px; }
+    .msg-time { font-size:10.5px; color:var(--muted); margin-top:4px; }
+    .chat-input-area { padding:14px 18px; border-top:1px solid var(--border); display:flex; gap:10px; align-items:flex-end; }
+    .chat-input-wrap { flex:1; }
+    .chat-input-wrap textarea { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:13.5px; font-family:inherit; resize:none; min-height:44px; max-height:120px; outline:none; transition:border-color .2s; background:#f8fafc; }
+    .chat-input-wrap textarea:focus { border-color:var(--primary-light); background:#fff; }
+    .send-btn { width:44px; height:44px; border-radius:10px; background:linear-gradient(135deg,var(--accent),#1d4ed8); color:#fff; border:none; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .15s ease; box-shadow:0 2px 8px rgba(37,99,235,0.3); }
+    .send-btn:hover { transform:scale(1.04); box-shadow:0 4px 14px rgba(37,99,235,0.4); }
+
+    /* Right panel */
+    .right-panel { display:flex; flex-direction:column; gap:16px; }
+    .info-card { background:var(--card); border-radius:16px; padding:18px; box-shadow:0 1px 3px rgba(0,0,0,0.04); border:1px solid var(--border); }
+    .info-card h4 { font-size:13px; font-weight:700; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .info-card h4 i { color:var(--primary); }
+
+    .sample-query { padding:9px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; font-size:12px; color:var(--text); cursor:pointer; transition:.15s; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+    .sample-query:hover { background:#eff6ff; border-color:#bfdbfe; color:var(--primary); }
+    .sample-query i { color:var(--muted); font-size:10px; flex-shrink:0; }
+    .sample-query:last-child { margin-bottom:0; }
+
+    /* Pipeline visual in right panel */
+    .pipeline-steps { display:flex; flex-direction:column; gap:8px; }
+    .ps-item { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; }
+    .ps-num { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; flex-shrink:0; }
+    .ps-1 { background:#eff6ff; color:#1d4ed8; }
+    .ps-2 { background:#f0fdf4; color:#16a34a; }
+    .ps-3 { background:#fffbeb; color:#d97706; }
+    .ps-4 { background:#faf5ff; color:#7c3aed; }
+    .ps-5 { background:#fef2f2; color:#dc2626; }
+    .ps-label { font-size:12px; font-weight:600; color:var(--text); }
+    .ps-sub { font-size:10.5px; color:var(--muted); }
+
+    .kb-stat { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9; }
+    .kb-stat:last-child { border-bottom:none; }
+    .kb-stat span { font-size:12.5px; color:var(--muted); }
+    .kb-stat strong { font-size:12.5px; font-weight:700; color:var(--text); }
+
+    .activity-item { display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:11.5px; }
+    .activity-item:last-child { border-bottom:none; }
+    .activity-time { color:var(--primary); font-weight:600; white-space:nowrap; }
+    .activity-text { color:var(--text); }
+
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+    @media (max-width: 1200px) {
+      .agents-row { grid-template-columns: repeat(3, 1fr); }
+      .main-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <a href="/dashboard" class="sidebar-brand" style="text-decoration:none;" title="FinCare AI — Your Financial Support Desk">
+    <img src="/static/images/branding/fincare-icon.png" alt="FinCare AI" class="brand-logo-img" />
+    <div class="brand-text">
+      <span class="brand-name">FinCare <em>AI</em></span>
+      <span class="brand-tagline">Your Financial Support Desk</span>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="/dashboard" class="nav-item" data-tooltip="Dashboard"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+    <a href="/add-ticket" class="nav-item" data-tooltip="Add Ticket"><i class="fas fa-plus-circle"></i> <span>Add Ticket</span></a>
+    <a href="/tickets" class="nav-item" data-tooltip="My Tickets"><i class="fas fa-ticket"></i> <span>My Tickets</span></a>
+
+    <div class="nav-section-label">Operations</div>
+    <a href="/ai-agent" class="nav-item active" data-tooltip="AI User"><i class="fas fa-robot"></i> <span>AI User</span></a>
+    <a href="/analytics" class="nav-item" data-tooltip="Analytics"><i class="fas fa-chart-line"></i> <span>Analytics</span></a>
+    <a href="/knowledge-base" class="nav-item" data-tooltip="Knowledge Base"><i class="fas fa-book-bookmark"></i> <span>Knowledge Base</span></a>
+
+    <div class="nav-section-label">Workspace</div>
+    <a href="/profile" class="nav-item" data-tooltip="Profile"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
+    <a href="/settings" class="nav-item" data-tooltip="Settings"><i class="fas fa-sliders"></i> <span>Settings</span></a>
+    <a href="javascript:void(0)" onclick="openHelpModal()" class="nav-item" data-tooltip="Help & Support"><i class="fas fa-circle-question"></i> <span>Help &amp; Support</span></a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="/profile" style="text-decoration:none;display:block;" title="View Profile">
+      <div class="user-info">
+        <div class="user-avatar">{{ current_user.name[0]|upper if current_user and current_user.name else 'J' }}</div>
+        <div class="user-info-text">
+          <strong>{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}</strong>
+          <span>{{ current_user.role|capitalize if current_user and current_user.role else 'User' }}</span>
+        </div>
+      </div>
+    </a>
+    <a href="/logout" class="logout-btn" title="Logout"><i class="fas fa-arrow-right-from-bracket"></i> <span>Logout</span></a>
+  </div>
+</aside>
+
+<!-- ── Main Content ── -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left" style="display:flex;align-items:center;gap:12px;">
+      <div>
+        <h1>FinCare AI Agent Workspace</h1>
+        <p>Real-time 5-agent multi-agent operations console and financial resolution testbed.</p>
+      </div>
+    </div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:12px;">
+      <div class="sp-chip"><img src="/static/images/branding/fincare-icon.png" alt="" style="width:16px;height:16px;border-radius:4px;vertical-align:middle;margin-right:6px;" />5-Agent Live Architecture</div>
+
+      <!-- Topbar Notification Bell -->
+      <div class="notif-dropdown-wrap" style="position:relative;">
+        <button type="button" class="btn-icon-topbar" onclick="toggleNotifDropdown(event)" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="notifBadge" style="{% if not unread_notification_count or unread_notification_count == 0 %}display:none;{% endif %}">{{ unread_notification_count if unread_notification_count else '' }}</span>
+        </button>
+        <div class="notif-menu" id="notifMenu">
+          <div class="notif-header">
+            <strong>Notifications</strong>
+            <button type="button" class="notif-clear-btn" onclick="clearNotifs(event)">Mark all read</button>
+          </div>
+          <div class="notif-list" id="notifList">
+            {% if recent_notifications %}
+              {% for n in recent_notifications %}
+              <a href="javascript:void(0)" 
+                 class="notif-item {{ 'read' if n.is_read else 'unread' }}" 
+                 onclick="handleNotifClick(event, {{ n.id }}, '{{ ('/ticket/' ~ n.ticket_id) if n.ticket_id else '/tickets' }}')">
+                <div class="notif-item-icon" style="background:{{ n.color }}18;color:{{ n.color }};">
+                  <i class="fas {{ n.icon }}"></i>
+                </div>
+                <div class="notif-item-content">
+                  <div class="notif-item-title">{{ n.title }} {% if not n.is_read %}<span class="unread-dot"></span>{% endif %}</div>
+                  <div class="notif-item-desc">{{ n.detail }}</div>
+                  <div class="notif-item-time">{{ n.time }}</div>
+                </div>
+              </a>
+              {% endfor %}
+            {% else %}
+              <div class="notif-empty">No unread notifications</div>
+            {% endif %}
+          </div>
+          <a href="/tickets" class="notif-footer-link" style="padding:10px 16px;text-align:center;background:#f8fafc;color:var(--primary);font-size:12px;font-weight:700;text-decoration:none;border-top:1px solid #f1f5f9;display:block;">View All Tickets &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Topbar Profile Dropdown (Just Letter Icon) -->
+      <div class="profile-dropdown-wrap" style="position:relative;">
+        <button type="button" class="btn-profile-topbar" onclick="toggleProfileMenu(event)" title="User Profile">
+          <div class="topbar-avatar">{{ current_user.name[0]|upper if current_user and current_user.name else 'J' }}</div>
+        </button>
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-menu-header">
+            <strong>{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}</strong>
+            <small>{{ current_user.email if current_user and current_user.email else 'joshithagosangari@gmail.com' }}</small>
+          </div>
+          <a href="/profile" class="profile-menu-item">
+            <i class="fas fa-user-circle"></i> Profile
+          </a>
+          <a href="/settings" class="profile-menu-item">
+            <i class="fas fa-sliders"></i> Account Settings
+          </a>
+          <a href="/profile#notifications" class="profile-menu-item">
+            <i class="fas fa-bell"></i> Notification Settings
+          </a>
+          <div class="profile-menu-divider"></div>
+          <a href="/logout" class="profile-menu-item" style="color:#ef4444;">
+            <i class="fas fa-arrow-right-from-bracket"></i> Sign Out
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 Agent Cards -->
+  <div class="agents-row">
+    <div class="agent-card a1">
+      <div class="agent-circle"><i class="fas fa-magnifying-glass-chart"></i></div>
+      <h4>Diagnosis Agent</h4>
+      <p>Classifies issue and evaluates risk</p>
+      <span class="agent-status active"><span class="online-dot"></span> Active</span>
+    </div>
+    <div class="agent-card a2">
+      <div class="agent-circle"><i class="fas fa-book-open"></i></div>
+      <h4>Retrieval Agent</h4>
+      <p>Finds relevant financial support guidance</p>
+      <span class="agent-status active"><span class="online-dot"></span> Active</span>
+    </div>
+    <div class="agent-card a3">
+      <div class="agent-circle"><i class="fas fa-wand-magic-sparkles"></i></div>
+      <h4>Resolution Agent</h4>
+      <p>Generates recommended resolution</p>
+      <span class="agent-status active"><span class="online-dot"></span> Active</span>
+    </div>
+    <div class="agent-card a4">
+      <div class="agent-circle"><i class="fas fa-circle-check"></i></div>
+      <h4>Validation Agent</h4>
+      <p>Checks confidence and resolution quality</p>
+      <span class="agent-status active"><span class="online-dot"></span> Active</span>
+    </div>
+    <div class="agent-card a5">
+      <div class="agent-circle"><i class="fas fa-arrow-up-right-from-square"></i></div>
+      <h4>Escalation Agent</h4>
+      <p>Resolves automatically or routes to human support</p>
+      <span class="agent-status standby">⏳ Standby</span>
+    </div>
+  </div>
+
+  <!-- Main Grid: Chat + Right Panel -->
+  <div class="main-grid">
+
+    <!-- Chat Card -->
+    <div class="chat-card">
+      <div class="chat-header">
+        <div class="chat-bot-avatar"><i class="fas fa-robot"></i></div>
+        <div class="chat-bot-info">
+          <strong>FinCare AI Assistant</strong>
+          <span><span class="online-ind"></span>Online · 5-Agent Pipeline · 300+ Verified KB Guides</span>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg ai">
+          <div class="msg-icon"><i class="fas fa-robot"></i></div>
+          <div>
+            <div class="msg-bubble">
+              👋 Hello! I'm <strong>FinCare AI</strong> — your financial support assistant.<br><br>
+              Describe a customer's issue and I'll execute the <strong>5-agent pipeline</strong>:<br>
+              Diagnosis → KB Retrieval → Resolution → Validation → Escalation<br><br>
+              <strong>Try a sample query from the panel to test →</strong>
+            </div>
+            <div class="msg-time">Just now</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="chat-input-wrap">
+          <textarea id="chatInput" placeholder="Describe the customer issue… e.g. ATM card was swallowed by machine" rows="1" onkeydown="handleKey(event)"></textarea>
+        </div>
+        <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+
+      <!-- Sample Queries -->
+      <div class="info-card">
+        <h4><i class="fas fa-bolt"></i> Sample Financial Queries</h4>
+        {% set samples = [
+          ('🏧','ATM cash not dispensed but account debited Rs 5000'),
+          ('🔐','Unauthorized transaction of Rs 25000 on my credit card'),
+          ('💳','My debit card is being declined at all POS terminals'),
+          ('📱','UPI payment failed but money was deducted from account'),
+          ('🏦','Account frozen due to KYC non-compliance'),
+          ('💸','NEFT transfer not received by beneficiary after 3 days')
+        ] %}
+        {% for emoji, q in samples %}
+        <div class="sample-query" onclick="fillQuery('{{ q }}')">
+          <span style="font-size:13px;">{{ emoji }}</span>
+          <i class="fas fa-chevron-right"></i>
+          {{ q }}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pipeline Steps -->
+      <div class="info-card">
+        <h4><i class="fas fa-diagram-project"></i> AI Resolution Pipeline</h4>
+        <div class="pipeline-steps">
+          <div class="ps-item"><div class="ps-num ps-1">1</div><div><div class="ps-label">Diagnosis Agent</div><div class="ps-sub">Classifies issue and evaluates risk</div></div></div>
+          <div class="ps-item"><div class="ps-num ps-2">2</div><div><div class="ps-label">Retrieval Agent</div><div class="ps-sub">Finds relevant financial support guidance</div></div></div>
+          <div class="ps-item"><div class="ps-num ps-3">3</div><div><div class="ps-label">Resolution Agent</div><div class="ps-sub">Generates recommended resolution</div></div></div>
+          <div class="ps-item"><div class="ps-num ps-4">4</div><div><div class="ps-label">Validation Agent</div><div class="ps-sub">Checks confidence and resolution quality</div></div></div>
+          <div class="ps-item"><div class="ps-num ps-5">5</div><div><div class="ps-label">Escalation Agent</div><div class="ps-sub">Resolves automatically or routes to human support</div></div></div>
+        </div>
+      </div>
+
+      <!-- KB Stats -->
+      <div class="info-card">
+        <h4><i class="fas fa-database"></i> Knowledge Base Grounding</h4>
+        <div class="kb-stat"><span>Verified Articles</span><strong>{{ kb_count if kb_count else 300 }}</strong></div>
+        <div class="kb-stat"><span>Categories</span><strong>{{ kb_categories if kb_categories else 18 }}</strong></div>
+        <div class="kb-stat"><span>Retrieval Algorithm</span><strong>TF-IDF Cosine</strong></div>
+        <div class="kb-stat"><span>Auto-Resolve Gate</span><strong>&ge; 70%</strong></div>
+      </div>
+
+      <!-- Live Activity Log -->
+      <div class="info-card">
+        <h4><i class="fas fa-clock-rotate-left"></i> Workflow Activity Log</h4>
+        <div id="activityLog">
+          <div class="activity-item">
+            <span class="activity-time">Ready</span>
+            <span class="activity-text"><strong>System:</strong> All 5 agents online and operational</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+  function fillQuery(q) {
+    document.getElementById('chatInput').value = q;
+    document.getElementById('chatInput').focus();
+  }
+  function getTime() {
+    return new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  function appendMsg(role, html) {
+    const box = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    const icon = role === 'ai' ? 'robot' : 'user';
+    div.innerHTML = `
+      <div class="msg-icon"><i class="fas fa-${icon}"></i></div>
+      <div>
+        <div class="msg-bubble">${html}</div>
+        <div class="msg-time">${getTime()}</div>
+      </div>`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+    return div;
+  }
+
+  function addActivity(time, agent, text) {
+    const log = document.getElementById('activityLog');
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `<span class="activity-time">${time}</span><span class="activity-text"><strong>${agent}:</strong> ${text}</span>`;
+    log.prepend(item);
+    while (log.children.length > 6) log.removeChild(log.lastChild);
+  }
+
+  function showTyping() {
+    const box = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = 'msg ai'; div.id = 'typingDot';
+    div.innerHTML = `
+      <div class="msg-icon"><i class="fas fa-robot"></i></div>
+      <div><div class="msg-bubble" style="color:var(--muted);background:#f8fafc;">
+        <span style="display:inline-flex;gap:5px;align-items:center;">
+          <span style="animation:bounce .6s infinite">●</span>
+          <span style="animation:bounce .6s .15s infinite">●</span>
+          <span style="animation:bounce .6s .3s infinite">●</span>
+          <span style="margin-left:8px;font-size:12px;">Running 5-agent pipeline…</span>
+        </span>
+      </div></div>`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const text  = input.value.trim();
+    if (!text) return;
+
+    appendMsg('user', text);
+    input.value = '';
+    showTyping();
+
+    const t = getTime();
+    addActivity(t, 'Diagnosis Agent', 'Analyzing issue category & risk...');
+
+    try {
+      const res  = await fetch('/api/rag-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: text })
+      });
+      const data = await res.json();
+      document.getElementById('typingDot')?.remove();
+
+      if (data.error) { appendMsg('ai', '⚠️ ' + data.error); return; }
+
+      addActivity(t, 'Retrieval Agent', `Retrieved ${data.retrieved ? data.retrieved.length : 0} verified KB guidance`);
+      addActivity(t, 'Resolution Agent', `Synthesized ${data.steps ? data.steps.length : 0} resolution steps`);
+      addActivity(t, 'Validation Agent', `Confidence: ${data.confidence || 75}%`);
+      addActivity(t, 'System', data.status === 'RESOLVED' ? 'High confidence met — AUTO-RESOLVE' : 'Escalated to human support');
+
+      let html = '';
+
+      if (data.llm_used) {
+        html += `<span style="display:inline-flex;align-items:center;gap:5px;background:#faf5ff;color:#7c3aed;border:1px solid #e9d5ff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;">🤖 LLM · ${data.model}</span><br><br>`;
+      } else {
+        html += `<span style="display:inline-flex;align-items:center;gap:5px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;">📚 KB Grounded Resolution</span><br><br>`;
+      }
+
+      html += `<strong>📋 5-Agent Execution Complete</strong><br>`;
+      html += `<span style="font-size:12px;color:var(--muted);">Key Signals: ${(data.keywords||[]).slice(0,5).join(', ') || 'Financial dispute'}</span><br><br>`;
+
+      if (data.retrieved && data.retrieved.length > 0) {
+        html += `<strong>📚 Verified Procedures Retrieved:</strong><br>`;
+        data.retrieved.slice(0,2).forEach(d => {
+          html += `<span style="font-size:12px;">• <em>${d.id}</em>: ${d.title} <span style="color:var(--primary);font-weight:700;">(${(d.score*100).toFixed(1)}% match)</span></span><br>`;
+        });
+        html += `<br>`;
+      }
+
+      if (data.steps && data.steps.length > 0) {
+        html += `<strong>✅ Actionable Resolution Steps:</strong><br>`;
+        data.steps.forEach(s => {
+          const isLast = s.source_id === 'SYS' || s.source_id === 'KB-TEMPLATE';
+          html += `<div style="margin:6px 0;padding:8px 10px;background:${isLast?'#faf5ff':'#f0fdf4'};border-radius:8px;border-left:3px solid ${isLast?'#8b5cf6':'#10b981'};">`;
+          html += `<strong style="font-size:12px;">${s.step}.</strong> <span style="font-size:12.5px;">${s.text}</span>`;
+          html += `<div style="font-size:10px;color:#94a3b8;margin-top:3px;"><i class="fas fa-book-open" style="font-size:9px;"></i> ${s.source_id} — ${s.source_title}</div>`;
+          html += `</div>`;
+        });
+      } else {
+        html += `⚠️ No resolution steps available. Case routed to human specialist.`;
+      }
+
+      if (data.message) {
+        html += `<br><span style="font-size:11px;color:var(--muted);">📌 ${data.message}</span>`;
+      }
+
+      appendMsg('ai', html);
+
+    } catch(e) {
+      document.getElementById('typingDot')?.remove();
+      appendMsg('ai', '❌ Error connecting to FinCare AI agent pipeline. Please ensure backend is running.');
+    }
+  }
+
+  // Sidebar Collapse / Expand Persistence
+  (function initSidebar() {
+    const isCollapsed = localStorage.getItem('fincare_sidebar_collapsed') === 'true';
+    if (isCollapsed) {
+      document.querySelector('.sidebar')?.classList.add('collapsed');
+      document.body.classList.add('sidebar-collapsed');
+    }
+  })();
+
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    const collapsed = sidebar.classList.toggle('collapsed');
+    document.body.classList.toggle('sidebar-collapsed', collapsed);
+    localStorage.setItem('fincare_sidebar_collapsed', collapsed);
+  }
+
+  // Topbar Dropdowns
+  function toggleNotifDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('profileMenu')?.classList.remove('open');
+    document.getElementById('notifMenu')?.classList.toggle('open');
+  }
+
+  function toggleProfileMenu(e) {
+    e.stopPropagation();
+    document.getElementById('notifMenu')?.classList.remove('open');
+    document.getElementById('profileMenu')?.classList.toggle('open');
+  }
+
+  async function handleNotifClick(e, notifId, redirectUrl) {
+    if (e) e.stopPropagation();
+    try {
+      await fetch('/api/notifications/' + notifId + '/read', { method: 'POST' });
+    } catch(err) {}
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
+    }
+  }
+
+  async function clearNotifs(e) {
+    if (e) e.stopPropagation();
+    try {
+      const res = await fetch('/api/notifications/read-all', { method: 'POST' });
+      const data = await res.json();
+      if (data && (data.status === 'ok' || data.success)) {
+        const badge = document.getElementById('notifBadge');
+        if (badge) badge.style.display = 'none';
+        const list = document.getElementById('notifList');
+        if (list) list.innerHTML = '<div class="notif-empty">All notifications marked as read ✓</div>';
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async function fetchUnreadCount() {
+    try {
+      const res = await fetch('/api/notifications/unread-count');
+      const data = await res.json();
+      if (data && (data.status === 'ok' || data.success)) {
+        const badge = document.getElementById('notifBadge');
+        if (badge) {
+          if (data.unread_count > 0) {
+            badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+            badge.style.display = 'flex';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      }
+    } catch(err) {}
+  }
+  setInterval(fetchUnreadCount, 25000);
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.notif-dropdown-wrap')) {
+      document.getElementById('notifMenu')?.classList.remove('open');
+    }
+    if (!e.target.closest('.profile-dropdown-wrap')) {
+      document.getElementById('profileMenu')?.classList.remove('open');
+    }
+  });
+
+  // Modal Handlers
+  function openHelpModal() {
+    document.getElementById('profileMenu')?.classList.remove('open');
+    document.getElementById('helpModal')?.classList.add('open');
+  }
+  function closeHelpModal() {
+    document.getElementById('helpModal')?.classList.remove('open');
+  }
+
+  function openProfileModal() {
+    document.getElementById('profileMenu')?.classList.remove('open');
+    document.getElementById('profileModal')?.classList.add('open');
+  }
+  function closeProfileModal() {
+    document.getElementById('profileModal')?.classList.remove('open');
+  }
+</script>
+
+<!-- Help & Support Modal -->
+<div class="modal-overlay" id="helpModal" onclick="if(event.target===this)closeHelpModal()">
+  <div class="modal-card">
+    <div class="modal-card-header">
+      <h3><i class="fas fa-circle-question" style="color:var(--primary);"></i> Help &amp; Support Reference</h3>
+      <button type="button" class="modal-card-close" onclick="closeHelpModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-card-body">
+      <div style="font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:16px;">
+        FinCare AI is an enterprise financial support automation platform operating a 5-Agent Multi-Agent resolution architecture.
+      </div>
+      <div style="background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;">
+        <strong style="display:block;font-size:12.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Resolution SLAs by Priority</strong>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px solid #f1f5f9;">
+          <span><strong>P1 Critical</strong> (Unauthorized / Fund Loss)</span>
+          <span style="color:#ef4444;font-weight:700;">Within 4 Hours</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px solid #f1f5f9;">
+          <span><strong>P2 High</strong> (Declined POS / Transfer)</span>
+          <span style="color:#f59e0b;font-weight:700;">Within 24 Hours</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;">
+          <span><strong>P3 Standard</strong> (General Queries / Statement)</span>
+          <span style="color:#10b981;font-weight:700;">Within 48 Hours</span>
+        </div>
+      </div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.5;">
+        <strong>Statutory Ombudsman:</strong> RBI CMS Portal (<a href="https://cms.rbi.org.in" target="_blank" style="color:var(--primary);font-weight:600;">cms.rbi.org.in</a>)<br/>
+        <strong>Internal Helpline:</strong> Ext. 8004 / <a href="mailto:support@fincare.ai" style="color:var(--primary);">support@fincare.ai</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal-overlay" id="profileModal" onclick="if(event.target===this)closeProfileModal()">
+  <div class="modal-card">
+    <div class="modal-card-header">
+      <h3><i class="fas fa-user-circle" style="color:var(--primary);"></i> User Profile Details</h3>
+      <button type="button" class="modal-card-close" onclick="closeProfileModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-card-body">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-cyan));color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;box-shadow:0 4px 14px rgba(37,99,235,0.3);">
+          {{ current_user.name[0]|upper if current_user and current_user.name else 'J' }}
+        </div>
+        <div>
+          <h4 style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:2px;">{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}</h4>
+          <span style="display:inline-block;padding:2px 10px;border-radius:20px;background:#eff6ff;color:var(--primary);font-size:11.5px;font-weight:700;border:1px solid #bfdbfe;">
+            User
+          </span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div style="background:#f8fafc;padding:12px;border-radius:10px;border:1px solid var(--border);">
+          <small style="color:var(--muted);font-size:10.5px;font-weight:700;text-transform:uppercase;display:block;">Email Address</small>
+          <strong style="font-size:12.5px;color:var(--text);word-break:break-all;">{{ current_user.email if current_user and current_user.email else 'joshithagosangari@gmail.com' }}</strong>
+        </div>
+        <div style="background:#f8fafc;padding:12px;border-radius:10px;border:1px solid var(--border);">
+          <small style="color:var(--muted);font-size:10.5px;font-weight:700;text-transform:uppercase;display:block;">Clearance Level</small>
+          <strong style="font-size:12.5px;color:#10b981;">Tier 2 Diagnostic</strong>
+        </div>
+      </div>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:12px 16px;font-size:12.5px;color:#15803d;display:flex;align-items:center;gap:10px;">
+        <i class="fas fa-shield-halved" style="font-size:18px;"></i>
+        <span>Authorized for AI-assisted auto-resolution &amp; Jira issue escalations.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Profile & Security – FinCare AI</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/branding/fincare-favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/images/branding/fincare-favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/images/branding/fincare-favicon-192.png" />
+  <link rel="shortcut icon" href="/static/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8fafc;
+      --sidebar: #0b152d;
+      --sidebar-w: 248px;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #1d4ed8;
+      --primary-light: #3b82f6;
+      --accent: #2563eb;
+      --accent-cyan: #06b6d4;
+      --green: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+    }
+    body { font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:var(--bg); display:flex; min-height:100vh; color:var(--text); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-brand {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .brand-logo-img {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      object-fit: contain;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      flex-shrink: 0;
+    }
+    .sidebar.collapsed { width: 72px; }
+    .sidebar.collapsed .sidebar-brand { justify-content: center; padding: 20px 10px; }
+    .sidebar.collapsed .brand-text { display: none; }
+    .sidebar.collapsed .nav-item span,
+    .sidebar.collapsed .nav-section-label,
+    .sidebar.collapsed .user-info-text,
+    .sidebar.collapsed .logout-btn span { display: none; }
+    .sidebar.collapsed .nav-item { justify-content: center; padding: 12px; position: relative; }
+    .sidebar.collapsed .user-info { justify-content: center; padding: 4px 0 10px; }
+    .sidebar.collapsed .logout-btn { justify-content: center; padding: 8px 0; }
+
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-name { color: #ffffff; font-size: 17px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.2; }
+    .brand-name em { color: #38bdf8; font-style: normal; }
+    .brand-tagline { color: #94a3b8; font-size: 11px; font-weight: 500; letter-spacing: 0.3px; }
+
+    .sidebar-nav { flex: 1; padding: 18px 12px; overflow-y: auto; }
+    .nav-section-label { color: rgba(255, 255, 255, 0.38); font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; padding: 12px 10px 6px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 13.5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      margin-bottom: 3px;
+    }
+    .nav-item i { width: 18px; text-align: center; font-size: 15px; color: #94a3b8; }
+    .nav-item:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+    .nav-item:hover i { color: #ffffff; }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(6, 182, 212, 0.2));
+      color: #ffffff; font-weight: 600; border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .nav-item.active i { color: #38bdf8; }
+
+    .sidebar-footer { padding: 16px 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0, 0, 0, 0.15); }
+    .user-info { display: flex; align-items: center; gap: 10px; padding: 4px 6px 12px; }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 13.5px; font-weight: 700; flex-shrink: 0;
+    }
+    .user-info-text strong { color: #ffffff; font-size: 13px; display: block; font-weight: 600; }
+    .user-info-text span { color: rgba(255, 255, 255, 0.45); font-size: 11px; }
+    .logout-btn { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; color: rgba(255, 255, 255, 0.6); font-size: 12.5px; font-weight: 500; text-decoration: none; transition: all 0.15s ease; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.18); color: #f87171; }
+
+    /* ── Main ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 28px 36px 40px;
+      max-width: calc(100vw - var(--sidebar-w));
+      transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body.sidebar-collapsed .main {
+      margin-left: 72px;
+      max-width: calc(100vw - 72px);
+    }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .topbar-left h1 { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; }
+    .topbar-left p { color: var(--muted); font-size: 13.5px; margin-top: 3px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .btn-icon-topbar {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: #ffffff; border: 1.5px solid var(--border);
+      color: var(--muted); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; font-size: 15px;
+    }
+    .notif-badge {
+      position: absolute; top: -4px; right: -4px;
+      background: #ef4444; color: #fff; font-size: 10px; font-weight: 800;
+      padding: 2px 5px; border-radius: 10px; border: 2px solid #fff;
+    }
+
+    .topbar-avatar {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-cyan));
+      color: #fff; font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Grid Layout */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700; color: var(--text);
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+
+    /* User Profile Hero Card */
+    .profile-hero-card {
+      text-align: center;
+      padding: 32px 24px;
+    }
+    .hero-avatar {
+      width: 90px; height: 90px; border-radius: 24px;
+      background: linear-gradient(135deg, #1d4ed8, #06b6d4);
+      color: #fff; font-size: 38px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+    }
+    .hero-name { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .hero-role {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .hero-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border);
+    }
+    .hero-stat-box { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
+    .hero-stat-box small { font-size: 11px; color: var(--muted); font-weight: 600; display: block; }
+    .hero-stat-box strong { font-size: 13.5px; color: var(--text); margin-top: 2px; display: block; }
+
+    /* Form Styles */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+    .form-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 13.5px; font-family: inherit;
+      color: var(--text); background: #f8fafc;
+      transition: border-color .15s, box-shadow .15s; outline: none;
+    }
+    .form-input:focus { border-color: var(--primary-light); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    .form-input[readonly] { background: #f1f5f9; color: #64748b; cursor: not-allowed; }
+
+    .btn-primary {
+      padding: 11px 22px;
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+      color: #fff; border: none; border-radius: 10px;
+      font-size: 13.5px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+      transition: all .2s; font-family: inherit;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.4); }
+
+    /* Checkbox & Notifications */
+    .check-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; background: #f8fafc; border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 10px; font-size: 13px; font-weight: 600; color: var(--text);
+    }
+    .check-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+
+    @media (max-width: 900px) {
+      .profile-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Modal Overlay & Card */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: #fff;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-card-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-card-header h3 { font-size: 16px; font-weight: 800; color: var(--text); display:flex; align-items:center; gap:8px; }
+    .modal-card-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: #f1f5f9;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card-close:hover { background: #e2e8f0; color: var(--text); }
+    .modal-card-body { padding: 22px; }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <a href="/dashboard" class="sidebar-brand" style="text-decoration:none;" title="FinCare AI">
+    <img src="/static/images/branding/fincare-icon.png" alt="FinCare AI" class="brand-logo-img" />
+    <div class="brand-text">
+      <span class="brand-name">FinCare <em>AI</em></span>
+      <span class="brand-tagline">Your Financial Support Desk</span>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="/dashboard" class="nav-item" data-tooltip="Dashboard"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+    <a href="/add-ticket" class="nav-item" data-tooltip="Add Ticket"><i class="fas fa-plus-circle"></i> <span>Add Ticket</span></a>
+    <a href="/tickets" class="nav-item" data-tooltip="My Tickets"><i class="fas fa-ticket"></i> <span>My Tickets</span></a>
+
+    <div class="nav-section-label">Operations</div>
+    <a href="/ai-agent" class="nav-item" data-tooltip="AI User"><i class="fas fa-robot"></i> <span>AI User</span></a>
+    <a href="/analytics" class="nav-item" data-tooltip="Analytics"><i class="fas fa-chart-line"></i> <span>Analytics</span></a>
+    <a href="/knowledge-base" class="nav-item" data-tooltip="Knowledge Base"><i class="fas fa-book-bookmark"></i> <span>Knowledge Base</span></a>
+
+    <div class="nav-section-label">Workspace</div>
+    <a href="/profile" class="nav-item active" data-tooltip="Profile"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
+    <a href="/settings" class="nav-item" data-tooltip="Settings"><i class="fas fa-sliders"></i> <span>Settings</span></a>
+    <a href="javascript:void(0)" onclick="openHelpModal()" class="nav-item" data-tooltip="Help & Support"><i class="fas fa-circle-question"></i> <span>Help &amp; Support</span></a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">{{ current_user.name[0]|upper if current_user and current_user.name else 'J' }}</div>
+      <div class="user-info-text">
+        <strong>{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}</strong>
+        <span>{{ current_user.role|capitalize if current_user and current_user.role else 'User' }}</span>
+      </div>
+    </div>
+    <a href="/logout" class="logout-btn" title="Logout"><i class="fas fa-arrow-right-from-bracket"></i> <span>Logout</span></a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>User Profile &amp; Security</h1>
+      <p>Manage your account credentials, security preferences, and workspace profile.</p>
+    </div>
+    <div class="topbar-right">
+      <a href="/settings" class="btn-primary" style="background:#fff;color:var(--text);border:1.5px solid var(--border);box-shadow:none;text-decoration:none;">
+        <i class="fas fa-sliders"></i> Platform Settings
+      </a>
+      <a href="/add-ticket" class="btn-primary" style="text-decoration:none;">
+        <i class="fas fa-plus"></i> New Ticket
+      </a>
+    </div>
+  </div>
+
+  <div class="profile-grid">
+    <!-- Left Column: User Summary Hero Card -->
+    <div>
+      <div class="card profile-hero-card">
+        <div class="hero-avatar">
+          {{ current_user.name[0]|upper if current_user and current_user.name else 'J' }}
+        </div>
+        <div class="hero-name">{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}</div>
+        <div class="hero-role">
+          <i class="fas fa-user-check"></i> {{ current_user.role|capitalize if current_user and current_user.role else 'User' }}
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">
+          {{ current_user.email if current_user and current_user.email else 'joshithagosangari@gmail.com' }}
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat-box">
+            <small>Account Status</small>
+            <strong style="color:var(--green);">✓ Active &amp; Verified</strong>
+          </div>
+          <div class="hero-stat-box">
+            <small>Access Tier</small>
+            <strong>Full Operator</strong>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12px;color:#15803d;text-align:left;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-circle-check" style="font-size:16px;"></i>
+          <span>Authorized to dispatch AI resolutions and escalate Jira incidents.</span>
+        </div>
+      </div>
+
+      <!-- Quick Session Box -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-shield-keyhole" style="color:var(--primary);"></i> Security Status</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:14px;">
+          Your current session is secured with JWT tokens and HttpOnly Lax cookies.
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12.5px;border-bottom:1px solid var(--border);">
+          <span>Authentication</span>
+          <strong>JWT Bearer</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12.5px;border-bottom:1px solid var(--border);">
+          <span>LLM Engine</span>
+          <strong>Groq 120B</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12.5px;">
+          <span>Session Lifetime</span>
+          <strong>60 Minutes</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Personal Info & Password Form -->
+    <div>
+      <!-- Personal Information Card -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-id-card" style="color:var(--primary);"></i> Personal Information</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" class="form-input" value="{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}" readonly>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" class="form-input" value="{{ current_user.email if current_user and current_user.email else 'joshithagosangari@gmail.com' }}" readonly>
+          </div>
+          <div class="form-group">
+            <label>Assigned Role</label>
+            <input type="text" class="form-input" value="{{ current_user.role|capitalize if current_user and current_user.role else 'User' }}" readonly>
+          </div>
+          <div class="form-group">
+            <label>Department / Team</label>
+            <div style="display:flex;gap:8px;">
+              <select id="userDepartment" class="form-input" style="cursor:pointer;" onchange="updateProfileDepartment(this.value)">
+                {% set cur_dept = current_user.department if current_user and current_user.department else 'Banking Operations & Support' %}
+                <option value="Banking Operations &amp; Support" {% if cur_dept == 'Banking Operations & Support' %}selected{% endif %}>Banking Operations &amp; Support</option>
+                <option value="Customer Grievance &amp; Escalations" {% if cur_dept == 'Customer Grievance & Escalations' %}selected{% endif %}>Customer Grievance &amp; Escalations</option>
+                <option value="Fraud &amp; Risk Investigation" {% if cur_dept == 'Fraud & Risk Investigation' %}selected{% endif %}>Fraud &amp; Risk Investigation</option>
+                <option value="Card Services &amp; Disputes" {% if cur_dept == 'Card Services & Disputes' %}selected{% endif %}>Card Services &amp; Disputes</option>
+                <option value="Digital Payments (UPI / IMPS / NEFT)" {% if cur_dept == 'Digital Payments (UPI / IMPS / NEFT)' %}selected{% endif %}>Digital Payments (UPI / IMPS / NEFT)</option>
+                <option value="Core Banking &amp; Account Services" {% if cur_dept == 'Core Banking & Account Services' %}selected{% endif %}>Core Banking &amp; Account Services</option>
+              </select>
+            </div>
+            <span id="deptSavedNotice" style="display:none;font-size:11px;color:#10b981;font-weight:600;margin-top:4px;"><i class="fas fa-check"></i> Department updated</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Password Change Card -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-key" style="color:var(--primary);"></i> Change Account Password</div>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;">
+          Update your workspace password. Upon successful update, all text fields will be cleared automatically.
+        </p>
+
+        <div id="pwdAlert" style="display:none;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:16px;"></div>
+
+        <form id="profileChangePasswordForm" onsubmit="handleProfilePasswordChange(event)">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" id="curPwd" name="current_password" class="form-input" placeholder="Enter current password" required>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="newPwd" name="new_password" class="form-input" placeholder="Minimum 6 characters" required>
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" id="confPwd" name="confirm_password" class="form-input" placeholder="Repeat new password" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" id="btnUpdatePwd">
+            <i class="fas fa-lock"></i> Update Password
+          </button>
+        </form>
+      </div>
+
+      <!-- Notification Rules Card -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-bell" style="color:var(--primary);"></i> Notification Preferences</div>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;">
+          Configure which events trigger real-time notification alerts in your topbar feed.
+        </p>
+
+        <div class="check-item">
+          <input type="checkbox" id="notif-esc" {% if notification_prefs.get('notif_esc', True) %}checked{% endif %}>
+          <label for="notif-esc">Escalated Tickets (Alert when tickets fail quality gate and route to specialist queue)</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="notif-res" {% if notification_prefs.get('notif_res', True) %}checked{% endif %}>
+          <label for="notif-res">AI Resolution Events (Notify when ticket is auto-resolved with high confidence)</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="notif-email" {% if notification_prefs.get('notif_email', True) %}checked{% endif %}>
+          <label for="notif-email">Customer Email Delivery Receipts (Log delivery confirmations)</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="notif-jira" {% if notification_prefs.get('notif_jira', True) %}checked{% endif %}>
+          <label for="notif-jira">Jira Incident Creation (Notify when a Jira issue is created with issue key)</label>
+        </div>
+
+        <button type="button" class="btn-primary" style="margin-top:10px;" onclick="saveProfileNotifPrefs(this)">
+          <i class="fas fa-check"></i> Save Preferences
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  async function handleProfilePasswordChange(e) {
+    e.preventDefault();
+    const curPwd = document.getElementById('curPwd');
+    const newPwd = document.getElementById('newPwd');
+    const confPwd = document.getElementById('confPwd');
+    const alertBox = document.getElementById('pwdAlert');
+    const btn = document.getElementById('btnUpdatePwd');
+
+    if (!curPwd.value) {
+      alertBox.style.display = 'block';
+      alertBox.style.background = '#fef2f2';
+      alertBox.style.color = '#dc2626';
+      alertBox.style.border = '1px solid #fecaca';
+      alertBox.innerText = 'Please enter your current password.';
+      return;
+    }
+
+    if (newPwd.value !== confPwd.value) {
+      alertBox.style.display = 'block';
+      alertBox.style.background = '#fef2f2';
+      alertBox.style.color = '#dc2626';
+      alertBox.style.border = '1px solid #fecaca';
+      alertBox.innerText = 'New passwords do not match. Please verify.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+    try {
+      const res = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          current_password: curPwd.value,
+          new_password: newPwd.value,
+          confirm_password: confPwd.value,
+        })
+      });
+      const data = await res.json();
+      alertBox.style.display = 'block';
+      if (res.ok && data.success) {
+        alertBox.style.background = '#f0fdf4';
+        alertBox.style.color = '#15803d';
+        alertBox.style.border = '1px solid #bbf7d0';
+        alertBox.innerText = '✓ ' + data.message;
+        // Clear text fields upon success as requested
+        curPwd.value = '';
+        newPwd.value = '';
+        confPwd.value = '';
+      } else {
+        alertBox.style.background = '#fef2f2';
+        alertBox.style.color = '#dc2626';
+        alertBox.style.border = '1px solid #fecaca';
+        alertBox.innerText = '⚠ ' + (data.error || 'Failed to update password.');
+      }
+    } catch(err) {
+      alertBox.style.display = 'block';
+      alertBox.style.background = '#fef2f2';
+      alertBox.style.color = '#dc2626';
+      alertBox.style.border = '1px solid #fecaca';
+      alertBox.innerText = '⚠ Network error while updating password.';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-lock"></i> Update Password';
+    }
+  }
+
+  async function saveProfileNotifPrefs(btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
+
+    const payload = {
+      notif_esc: document.getElementById('notif-esc')?.checked ?? true,
+      notif_res: document.getElementById('notif-res')?.checked ?? true,
+      notif_email: document.getElementById('notif-email')?.checked ?? true,
+      notif_jira: document.getElementById('notif-jira')?.checked ?? true,
+      notif_sys: true,
+    };
+
+    try {
+      const res = await fetch('/api/user/notification-prefs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        btn.innerHTML = '<i class="fas fa-check"></i> Preferences Saved!';
+        setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2000);
+      } else {
+        alert('Failed to save notification preferences.');
+        btn.innerHTML = orig;
+        btn.disabled = false;
+      }
+    } catch (err) {
+      alert('Error updating notification preferences: ' + err.message);
+      btn.innerHTML = orig;
+      btn.disabled = false;
+    }
+  }
+
+  async function updateProfileDepartment(newDept) {
+    const notice = document.getElementById('deptSavedNotice');
+    try {
+      const res = await fetch('/api/user/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ department: newDept })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (notice) {
+          notice.style.display = 'block';
+          setTimeout(() => { notice.style.display = 'none'; }, 3000);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to update department:', err);
+    }
+  }
+
+  function openHelpModal() {
+    document.getElementById('helpModal')?.classList.add('open');
+  }
+  function closeHelpModal() {
+    document.getElementById('helpModal')?.classList.remove('open');
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeHelpModal();
+  });
+</script>
+
+<!-- Help & Support Modal -->
+<div class="modal-overlay" id="helpModal" onclick="if(event.target===this)closeHelpModal()">
+  <div class="modal-card">
+    <div class="modal-card-header">
+      <h3><i class="fas fa-circle-question" style="color:var(--primary);"></i> Help &amp; Support Reference</h3>
+      <button type="button" class="modal-card-close" onclick="closeHelpModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-card-body">
+      <div style="font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:16px;">
+        FinCare AI is an enterprise financial support automation platform operating a 5-Agent Multi-Agent resolution architecture.
+      </div>
+      <div style="background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;">
+        <strong style="display:block;font-size:12.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Resolution SLAs by Priority</strong>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px solid #f1f5f9;">
+          <span><strong>P1 Critical</strong> (Unauthorized / Fund Loss)</span>
+          <span style="color:#ef4444;font-weight:700;">Within 4 Hours</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px solid #f1f5f9;">
+          <span><strong>P2 High</strong> (Declined POS / Transfer)</span>
+          <span style="color:#f59e0b;font-weight:700;">Within 24 Hours</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;">
+          <span><strong>P3 Standard</strong> (General Queries / Statement)</span>
+          <span style="color:#10b981;font-weight:700;">Within 48 Hours</span>
+        </div>
+      </div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.5;">
+        <strong>Statutory Ombudsman:</strong> RBI CMS Portal (<a href="https://cms.rbi.org.in" target="_blank" style="color:var(--primary);font-weight:600;">cms.rbi.org.in</a>)<br/>
+        <strong>Internal Helpline:</strong> Ext. 8004 / <a href="mailto:support@fincare.ai" style="color:var(--primary);">support@fincare.ai</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

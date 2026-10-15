@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FinCare AI — Your AI-Powered Financial Support Desk</title>
+  <meta name="description" content="Resolve financial support tickets faster with intelligent classification, knowledge retrieval, AI-powered resolution, and automated escalation."/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/branding/fincare-favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/images/branding/fincare-favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/images/branding/fincare-favicon-192.png" />
+  <link rel="shortcut icon" href="/static/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #070d1e;
+      --bg-card: #0d1733;
+      --bg-card-hover: #132147;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #2563eb;
+      --primary-glow: rgba(37, 99, 235, 0.35);
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.25);
+      --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.2);
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(56, 189, 248, 0.25);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.10) 0%, transparent 35%),
+        radial-gradient(circle at 50% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 50%);
+    }
+
+    /* ── Utilities ── */
+    .container { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+    .badge-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 9999px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.4px;
+      text-transform: uppercase;
+      background: rgba(37, 99, 235, 0.15);
+      color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);
+      margin-bottom: 20px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 12px 24px; border-radius: 12px; font-size: 14.5px; font-weight: 700;
+      text-decoration: none; transition: all 0.2s ease; cursor: pointer; border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      color: #ffffff;
+      box-shadow: 0 4px 18px var(--primary-glow);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(37, 99, 235, 0.5);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    /* ── Navigation ── */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7, 13, 30, 0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px; text-decoration: none;
+    }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    }
+    .brand-text strong {
+      font-size: 18px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; line-height: 1.1;
+      letter-spacing: -0.3px;
+    }
+    .brand-text strong em { color: #38bdf8; font-style: normal; }
+    .brand-badge {
+      font-size: 9.5px; font-weight: 700; color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .brand-text span {
+      font-size: 11px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.3px;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 10px; list-style: none;
+    }
+    .nav-link-btn {
+      color: var(--text-muted); text-decoration: none; font-size: 13.5px; font-weight: 600;
+      padding: 8px 16px; border-radius: 9999px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+      background: transparent; border: 1px solid transparent; font-family: inherit;
+    }
+    .nav-link-btn:hover {
+      color: #fff; background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+    }
+    .nav-link-btn.active {
+      color: #38bdf8 !important;
+      background: rgba(56, 189, 248, 0.12) !important;
+      border-color: rgba(56, 189, 248, 0.4) !important;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.25) !important;
+      font-weight: 700 !important;
+    }
+
+    /* ── High-Impact Card Hover Effects Across Landing Page ── */
+    .feat-card, .lc-step, .sec-card, .ap-node, .ds-card, .rf-step, .pb-kpi, .pb-telem-card, .hero-visual-card, .pb-case-output {
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, background 0.25s ease !important;
+      cursor: default;
+    }
+    .feat-card:hover, .sec-card:hover {
+      transform: translateY(-6px) !important;
+      border-color: rgba(56, 189, 248, 0.45) !important;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.55), 0 0 26px rgba(56, 189, 248, 0.22) !important;
+      background: var(--bg-card-hover) !important;
+    }
+    .lc-step:hover {
+      transform: translateY(-5px) !important;
+      border-color: rgba(56, 189, 248, 0.45) !important;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(56, 189, 248, 0.2) !important;
+    }
+    .hero-visual-card:hover {
+      transform: translateY(-4px) !important;
+      border-color: rgba(56, 189, 248, 0.5) !important;
+      box-shadow: 0 26px 64px rgba(0, 0, 0, 0.55), 0 0 45px rgba(37, 99, 235, 0.45) !important;
+    }
+    .ap-node:hover {
+      transform: translateY(-4px) !important;
+      border-color: rgba(56, 189, 248, 0.4) !important;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35), 0 0 16px rgba(56, 189, 248, 0.15) !important;
+    }
+    .ds-card:hover {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35) !important;
+    }
+    .rf-step:hover {
+      transform: translateX(4px) !important;
+      border-color: rgba(56, 189, 248, 0.4) !important;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35) !important;
+    }
+    .pb-kpi:hover, .pb-telem-card:hover {
+      transform: translateY(-3px) !important;
+      border-color: rgba(56, 189, 248, 0.35) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+    }
+    .pb-case-output:hover {
+      border-color: rgba(56, 189, 248, 0.4) !important;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(37, 99, 235, 0.2) !important;
+    }
+    .ptm-row {
+      transition: background 0.18s ease, transform 0.18s ease;
+      padding: 10px 12px !important;
+      border-radius: 8px;
+    }
+    .ptm-row:hover {
+      background: rgba(37, 99, 235, 0.12) !important;
+      transform: translateX(4px);
+    }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .nav-status-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 11.5px; font-weight: 600;
+      background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #6ee7b7;
+    }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #10b981; box-shadow: 0 0 8px #10b981;
+      animation: statusPulse 1.8s infinite;
+    }
+    @keyframes statusPulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    /* ── Hero Section ── */
+    .hero {
+      padding: 90px 0 70px;
+      position: relative;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center;
+    }
+    .hero-content h1 {
+      font-size: 48px; font-weight: 900; line-height: 1.15; letter-spacing: -1.2px;
+      margin-bottom: 20px;
+    }
+    .hero-content p {
+      font-size: 17.5px; color: var(--text-muted); line-height: 1.65;
+      margin-bottom: 32px; max-width: 580px;
+    }
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 40px; }
+    .hero-stats {
+      display: flex; gap: 32px; border-top: 1px solid var(--border); padding-top: 24px;
+    }
+    .hs-item strong {
+      font-size: 24px; font-weight: 900; color: #fff; display: block;
+    }
+    .hs-item span {
+      font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;
+    }
+
+    /* ── Hero Visual Mockup ── */
+    .hero-visual-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-bright);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px var(--primary-glow);
+      position: relative;
+    }
+    .hvc-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    .hvc-title {
+      font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;
+    }
+    .hvc-badge {
+      background: rgba(16, 185, 129, 0.15); color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    }
+    .hvc-ticket-meta {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 18px;
+    }
+    .htm-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; }
+    .htm-row span { color: var(--text-muted); }
+    .htm-row strong { color: #fff; font-weight: 600; }
+    .htm-subject { font-size: 14px; font-weight: 700; color: #fff; margin-top: 6px; }
+
+    .hvc-pipeline-steps {
+      display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;
+    }
+    .hvc-step {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border); font-size: 12px;
+    }
+    .hvc-step-left { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
+    .hvc-step-left i { color: #10b981; }
+    .hvc-step-status { color: #38bdf8; font-weight: 700; }
+
+    .hvc-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 12px 16px; border-radius: 12px;
+    }
+    .hvc-conf span { font-size: 11px; color: #94a3b8; text-transform: uppercase; display: block; }
+    .hvc-conf strong { font-size: 18px; font-weight: 900; color: #38bdf8; }
+    .hvc-status-pill {
+      background: #10b981; color: #fff; font-size: 12px; font-weight: 800;
+      padding: 6px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;
+    }
+
+    /* ── Features / Value Section ── */
+    .section { padding: 90px 0; border-top: 1px solid var(--border); }
+    .section-head { text-align: center; max-width: 680px; margin: 0 auto 56px; }
+    .section-head h2 { font-size: 34px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 14px; }
+    .section-head p { font-size: 16px; color: var(--text-muted); line-height: 1.6; }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+    }
+    .feat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 22px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .feat-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-4px);
+    }
+    .feat-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 18px;
+    }
+    .fi-blue { background: rgba(37, 99, 235, 0.15); color: #38bdf8; }
+    .fi-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+    .fi-purple { background: rgba(139, 92, 246, 0.15); color: #c084fc; }
+    .fi-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .feat-card h3 { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+    .feat-card p { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── How It Works Lifecycle ── */
+    .lifecycle-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; position: relative;
+    }
+    .lc-step {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px 16px; text-align: center;
+      transition: all 0.2s; position: relative;
+    }
+    .lc-step:hover {
+      border-color: var(--border-bright); transform: translateY(-3px);
+    }
+    .lc-num {
+      font-size: 11px; font-weight: 900; letter-spacing: 1px; color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12); padding: 4px 8px; border-radius: 6px;
+      display: inline-block; margin-bottom: 12px;
+    }
+    .lc-icon {
+      font-size: 24px; color: #fff; margin-bottom: 12px; display: block;
+    }
+    .lc-step h4 { font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .lc-step p { font-size: 11px; color: var(--text-muted); line-height: 1.45; }
+
+    /* ── AI Intelligence Multi-Agent ── */
+    .agent-flow-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .agent-pipeline-visual {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 32px;
+    }
+    .ap-node {
+      flex: 1; min-width: 170px; background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border); border-radius: 14px; padding: 18px 14px;
+      text-align: center; position: relative;
+    }
+    .ap-node.active-gate {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(37, 99, 235, 0.1);
+    }
+    .ap-icon {
+      width: 40px; height: 40px; border-radius: 10px; margin: 0 auto 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .ap-1 { background: rgba(37, 99, 235, 0.2); color: #60a5fa; }
+    .ap-2 { background: rgba(6, 182, 212, 0.2); color: #22d3ee; }
+    .ap-3 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .ap-4 { background: rgba(139, 92, 246, 0.2); color: #c084fc; }
+    .ap-5 { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .ap-node h4 { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .ap-node span { font-size: 11px; color: var(--text-muted); display: block; }
+
+    .decision-split {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+      border-top: 1px dashed var(--border); padding-top: 28px;
+    }
+    .ds-card {
+      border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; gap: 16px;
+    }
+    .ds-resolve {
+      background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .ds-escalate {
+      background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+    .ds-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+    }
+    .ds-resolve .ds-icon { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .ds-escalate .ds-icon { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .ds-info strong { font-size: 15px; color: #fff; display: block; margin-bottom: 2px; }
+    .ds-info span { font-size: 12.5px; color: var(--text-muted); }
+
+    /* ── Knowledge & Grounded RAG ── */
+    .rag-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
+    }
+    .rag-flow {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .rf-step {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 18px;
+    }
+    .rf-badge {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: rgba(56, 189, 248, 0.15); color: #38bdf8;
+      display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800;
+    }
+    .rf-text strong { font-size: 13.5px; color: #fff; display: block; }
+    .rf-text span { font-size: 11.5px; color: var(--text-muted); }
+
+    .rag-highlights { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .rag-highlights li {
+      display: flex; align-items: flex-start; gap: 12px; font-size: 14.5px; color: var(--text-muted);
+    }
+    .rag-highlights li i { color: #38bdf8; font-size: 15px; margin-top: 4px; }
+    .rag-highlights li strong { color: #fff; }
+
+    /* ── Security Section ── */
+    .security-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .sec-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px; transition: all 0.2s;
+    }
+    .sec-card:hover { border-color: rgba(56, 189, 248, 0.3); transform: translateY(-2px); }
+    .sec-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(16, 185, 129, 0.15); color: #34d399;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      margin-bottom: 16px;
+    }
+    .sec-card h3 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .sec-card p { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+
+    /* ── Product Preview ── */
+    .preview-box {
+      background: var(--bg-card); border: 1px solid var(--border-bright);
+      border-radius: 20px; padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .pb-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px;
+    }
+    .pb-dots { display: flex; gap: 6px; }
+    .pb-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .pbd-r { background: #ef4444; } .pbd-y { background: #f59e0b; } .pbd-g { background: #10b981; }
+    .pb-url {
+      font-size: 11.5px; color: var(--text-dim); background: rgba(255, 255, 255, 0.04);
+      padding: 4px 16px; border-radius: 6px;
+    }
+
+    .pb-content {
+      display: grid; grid-template-columns: 200px 1fr; gap: 20px;
+    }
+    .pb-sidebar {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .pbs-item {
+      padding: 8px 12px; border-radius: 8px; font-size: 12px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pbs-item.active { background: rgba(37, 99, 235, 0.2); color: #fff; font-weight: 600; }
+    .pb-main { display: flex; flex-direction: column; gap: 16px; }
+    .pb-kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .pb-kpi {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px;
+    }
+    .pb-kpi span { font-size: 10px; color: var(--text-dim); font-weight: 700; text-transform: uppercase; }
+    .pb-kpi strong { font-size: 17px; color: #fff; display: block; margin-top: 2px; }
+
+    .pb-table-mock {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px;
+    }
+    .ptm-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 12px;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .ptm-row:last-child { border-bottom: none; }
+
+    /* ── Informative Case Output Elements ── */
+    .pbs-count {
+      margin-left: auto; background: rgba(37, 99, 235, 0.2); color: #38bdf8;
+      font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px;
+    }
+    .pb-case-output {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-bright);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .pb-case-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+      flex-wrap: wrap; gap: 8px;
+    }
+    .pb-ticket-id {
+      background: rgba(37, 99, 235, 0.2); color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;
+    }
+    .pb-badge-p2 {
+      background: rgba(245, 158, 11, 0.15); color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+    }
+    .pb-badge-cat {
+      background: rgba(255, 255, 255, 0.05); color: #94a3b8;
+      padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    }
+    .pb-status-tag-resolved {
+      background: rgba(16, 185, 129, 0.15); color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .pb-issue-snippet {
+      background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 14px;
+    }
+    .pb-telemetry-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+      margin-bottom: 14px;
+    }
+    .pb-telem-card {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px;
+    }
+    .pbt-title {
+      font-size: 9.5px; font-weight: 800; color: var(--text-muted);
+      letter-spacing: 0.4px; display: block; margin-bottom: 4px;
+    }
+    .pbt-val {
+      font-size: 12px; font-weight: 700; color: #fff; display: block;
+      margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbt-sub {
+      font-size: 10px; color: var(--text-dim); display: block;
+    }
+    .pb-resolution-preview {
+      background: rgba(37, 99, 235, 0.06); border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 4px;
+    }
+    .pb-res-list {
+      padding-left: 18px; margin: 0; font-size: 11.5px; color: #cbd5e1;
+      line-height: 1.6;
+    }
+    .pb-res-list li { margin-bottom: 4px; }
+    .pbt-pill {
+      font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+    }
+    .pbt-p1 { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .pbt-p2 { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .pbt-p3 { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    /* ── CTA Banner ── */
+    .cta-section {
+      padding: 80px 0;
+      text-align: center;
+    }
+    .cta-card {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(6, 182, 212, 0.15));
+      border: 1px solid var(--border-bright);
+      border-radius: 24px; padding: 60px 30px; max-width: 860px; margin: 0 auto;
+      box-shadow: 0 10px 40px var(--primary-glow);
+    }
+    .cta-card h2 { font-size: 36px; font-weight: 900; color: #fff; margin-bottom: 14px; }
+    .cta-card p { font-size: 16px; color: var(--text-muted); margin-bottom: 30px; }
+
+    /* ── Footer ── */
+    .footer {
+      border-top: 1px solid var(--border); padding: 60px 0 30px;
+      background: #040814;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px;
+    }
+    .footer-brand p { font-size: 13px; color: var(--text-muted); margin-top: 12px; max-width: 280px; }
+    .footer-col h4 { font-size: 13px; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.5px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a { color: var(--text-muted); text-decoration: none; font-size: 13.5px; transition: color 0.15s; }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding-top: 24px;
+      display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: var(--text-dim);
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .lifecycle-grid { grid-template-columns: repeat(3, 1fr); }
+      .security-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .pb-content { grid-template-columns: 1fr; }
+      .pb-telemetry-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .hero-content h1 { font-size: 34px; }
+      .nav-links { display: none; }
+      .lifecycle-grid { grid-template-columns: 1fr; }
+      .decision-split { grid-template-columns: 1fr; }
+      .pb-kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .pb-telemetry-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<header class="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="brand">
+      <img src="/static/images/branding/fincare-icon.png" alt="FinCare AI" class="brand-logo-img" style="width:36px;height:36px;border-radius:10px;box-shadow:0 4px 14px rgba(37,99,235,0.4);" />
+      <div class="brand-text">
+        <strong>FinCare <em>AI</em></strong>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#features" class="nav-link-btn" id="nav-features">Features</a></li>
+      <li><a href="#how-it-works" class="nav-link-btn" id="nav-how-it-works">How It Works</a></li>
+      <li><a href="#security" class="nav-link-btn" id="nav-security">Security</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      {% if current_user %}
+        <a href="/dashboard" class="btn btn-primary" style="padding:9px 18px; font-size:13.5px;">
+          <i class="fas fa-chart-pie"></i> Go to Dashboard
+        </a>
+      {% else %}
+        <a href="/login" class="btn btn-secondary" style="padding:9px 18px; font-size:13.5px;">Login</a>
+        <a href="/signup" class="btn btn-primary" style="padding:9px 18px; font-size:13.5px;">
+          Get Started <i class="fas fa-arrow-right" style="font-size:11px;margin-left:4px;"></i>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<!-- ── Hero Section ── -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-content">
+      <div class="badge-chip">
+        <i class="fas fa-bolt"></i> Intelligent Financial Resolution
+      </div>
+      <h1>
+        Your AI-Powered <br/>
+        <span class="gradient-text">Financial Support Desk</span>
+      </h1>
+      <p>
+        Resolve financial support tickets faster with intelligent classification, knowledge retrieval, AI-powered resolution, and automated escalation.
+      </p>
+
+      <div class="hero-btns">
+        <a href="/signup" class="btn btn-primary">
+          <i class="fas fa-arrow-right"></i> Get Started
+        </a>
+        <a href="/login" class="btn btn-secondary">
+          <i class="fas fa-right-to-bracket"></i> Login
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hs-item">
+          <strong>5-Agent</strong>
+          <span>Architecture</span>
+        </div>
+        <div class="hs-item">
+          <strong>300+</strong>
+          <span>Verified SOPs</span>
+        </div>
+        <div class="hs-item">
+          <strong>&lt; 2.5s</strong>
+          <span>Avg Response</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Ticket Visual Card -->
+    <div class="hero-visual-card">
+      <div class="hvc-header">
+        <div class="hvc-title">
+          <i class="fas fa-microchip" style="color:#38bdf8;"></i>
+          <span>FinCare AI Support Intelligence</span>
+        </div>
+        <span class="hvc-badge"><i class="fas fa-circle-check"></i> Live Run</span>
+      </div>
+
+      <div class="hvc-ticket-meta">
+        <div class="htm-row">
+          <span>Ticket ID: <strong>#FIN-102</strong></span>
+          <span>Priority: <strong style="color:#d97706;">P2 · High</strong></span>
+        </div>
+        <div class="htm-row">
+          <span>Customer: <strong>Priya Sharma</strong></span>
+          <span>Category: <strong>Card Payment Issue</strong></span>
+        </div>
+        <div class="htm-subject">
+          "Debit card payment declined at merchant POS terminal, money deducted"
+        </div>
+      </div>
+
+      <div class="hvc-pipeline-steps">
+        <div class="hvc-step">
+          <div class="hvc-step-left"><i class="fas fa-circle-check"></i> <span>Diagnosis Agent</span></div>
+          <span class="hvc-step-status">Declined Card (Medium Risk)</span>
+        </div>
+        <div class="hvc-step">
+          <div class="hvc-step-left"><i class="fas fa-circle-check"></i> <span>Retrieval Agent</span></div>
+          <span class="hvc-step-status">KB-CRD-042 Retrieved (88% Match)</span>
+        </div>
+        <div class="hvc-step">
+          <div class="hvc-step-left"><i class="fas fa-circle-check"></i> <span>Resolution Agent</span></div>
+          <span class="hvc-step-status">6 Actionable Steps Generated</span>
+        </div>
+        <div class="hvc-step">
+          <div class="hvc-step-left"><i class="fas fa-circle-check"></i> <span>Validation Agent</span></div>
+          <span class="hvc-step-status">92% Confidence Score</span>
+        </div>
+      </div>
+
+      <div class="hvc-footer">
+        <div class="hvc-conf">
+          <span>AI Confidence</span>
+          <strong>92%</strong>
+        </div>
+        <div class="hvc-status-pill">
+          <i class="fas fa-check"></i> AI RESOLVED
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── What FinCare AI Does ── -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge-chip"><i class="fas fa-sparkles"></i> Platform Capabilities</div>
+      <h2>What FinCare AI Does</h2>
+      <p>Intelligent, knowledge-grounded, multi-agent financial support automation.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon fi-blue"><i class="fas fa-brain"></i></div>
+        <h3>AI Ticket Intelligence</h3>
+        <p>Automatically understand and classify support tickets.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon fi-cyan"><i class="fas fa-book-bookmark"></i></div>
+        <h3>Knowledge-Powered Resolution</h3>
+        <p>Retrieve relevant support knowledge before generating solutions.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon fi-purple"><i class="fas fa-users-gear"></i></div>
+        <h3>Multi-Agent Resolution</h3>
+        <p>Specialized AI agents collaborate to diagnose, resolve and validate.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon fi-amber"><i class="fas fa-arrow-up-right-from-square"></i></div>
+        <h3>Smart Escalation</h3>
+        <p>Low-confidence cases are automatically routed to human support.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How It Works Lifecycle ── -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge-chip"><i class="fas fa-route"></i> Lifecycle Architecture</div>
+      <h2>How FinCare AI Resolves Each Ticket</h2>
+      <p>A rigorous 6-step lifecycle ensures high resolution rates without compromising regulatory accuracy.</p>
+    </div>
+
+    <div class="lifecycle-grid">
+      <div class="lc-step">
+        <span class="lc-num">STEP 01</span>
+        <i class="fas fa-envelope-open-text lc-icon"></i>
+        <h4>Customer Ticket</h4>
+        <p>Case submitted via portal or customer support relay</p>
+      </div>
+
+      <div class="lc-step">
+        <span class="lc-num">STEP 02</span>
+        <i class="fas fa-tags lc-icon"></i>
+        <h4>AI Classification</h4>
+        <p>Identifies banking category, priority &amp; severity</p>
+      </div>
+
+      <div class="lc-step">
+        <span class="lc-num">STEP 03</span>
+        <i class="fas fa-magnifying-glass lc-icon"></i>
+        <h4>Knowledge Retrieval</h4>
+        <p>TF-IDF search extracts relevant banking SOPs</p>
+      </div>
+
+      <div class="lc-step">
+        <span class="lc-num">STEP 04</span>
+        <i class="fas fa-wand-magic-sparkles lc-icon"></i>
+        <h4>AI Resolution</h4>
+        <p>Grounded LLM constructs numbered action steps</p>
+      </div>
+
+      <div class="lc-step">
+        <span class="lc-num">STEP 05</span>
+        <i class="fas fa-circle-check lc-icon"></i>
+        <h4>Validation</h4>
+        <p>Mathematical gate checks score against 70% threshold</p>
+      </div>
+
+      <div class="lc-step">
+        <span class="lc-num">STEP 06</span>
+        <i class="fas fa-arrows-split-up-and-left lc-icon"></i>
+        <h4>Resolve or Escalate</h4>
+        <p>Dispatches customer email or logs Jira incident</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AI Intelligence Multi-Agent Architecture ── -->
+<section class="section" id="architecture">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge-chip"><i class="fas fa-diagram-project"></i> Multi-Agent Intelligence</div>
+      <h2>Five Specialized Agents, One Cohesive Pipeline</h2>
+      <p>Rather than relying on generic LLM prompting, FinCare AI separates responsibilities across specialized micro-agents.</p>
+    </div>
+
+    <div class="agent-flow-box">
+      <div class="agent-pipeline-visual">
+        <div class="ap-node" style="border-style:dashed;border-color:rgba(255,255,255,0.2);">
+          <div class="ap-icon" style="background:rgba(255,255,255,0.08);color:#fff;"><i class="fas fa-ticket"></i></div>
+          <h4>Customer Ticket</h4>
+          <span>Inbound Support Issue</span>
+        </div>
+
+        <div style="color:var(--text-dim);font-size:16px;"><i class="fas fa-arrow-right"></i></div>
+
+        <div class="ap-node">
+          <div class="ap-icon ap-1"><i class="fas fa-magnifying-glass-chart"></i></div>
+          <h4>Diagnosis Agent</h4>
+          <span>Category &amp; Risk Classification</span>
+        </div>
+
+        <div style="color:var(--text-dim);font-size:16px;"><i class="fas fa-arrow-right"></i></div>
+
+        <div class="ap-node">
+          <div class="ap-icon ap-2"><i class="fas fa-book-open"></i></div>
+          <h4>Retrieval Agent</h4>
+          <span>TF-IDF Banking SOP Search</span>
+        </div>
+
+        <div style="color:var(--text-dim);font-size:16px;"><i class="fas fa-arrow-right"></i></div>
+
+        <div class="ap-node">
+          <div class="ap-icon ap-3"><i class="fas fa-list-check"></i></div>
+          <h4>Resolution Agent</h4>
+          <span>6-Step Grounded Guidance</span>
+        </div>
+
+        <div style="color:var(--text-dim);font-size:16px;"><i class="fas fa-arrow-right"></i></div>
+
+        <div class="ap-node active-gate">
+          <div class="ap-icon ap-4"><i class="fas fa-circle-check"></i></div>
+          <h4>Validation Agent</h4>
+          <span>Quality Gate &amp; Scoring</span>
+        </div>
+      </div>
+
+      <div class="decision-split">
+        <div class="ds-card ds-resolve">
+          <div class="ds-icon"><i class="fas fa-envelope-circle-check"></i></div>
+          <div class="ds-info">
+            <strong>RESOLVE &rarr; Automated Email</strong>
+            <span>High-confidence automated resolution delivered directly to customer via email.</span>
+          </div>
+        </div>
+
+        <div class="ds-card ds-escalate">
+          <div class="ds-icon"><i class="fab fa-jira"></i></div>
+          <div class="ds-info">
+            <strong>ESCALATE &rarr; Jira Incident</strong>
+            <span>Low-confidence or fraud cases routed to human tier-2 support with ticket created in Jira.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Knowledge & Grounded RAG ── -->
+<section class="section" id="knowledge">
+  <div class="container">
+    <div class="rag-grid">
+      <div>
+        <div class="badge-chip"><i class="fas fa-shield-halved"></i> Hallucination Protection</div>
+        <h2 style="font-size:34px;font-weight:900;letter-spacing:-0.8px;margin-bottom:18px;">
+          Answers Grounded in Your Support Knowledge
+        </h2>
+        <p style="color:var(--text-muted);font-size:15.5px;line-height:1.65;margin-bottom:28px;">
+          Financial support requires strict regulatory compliance. FinCare AI ensures every resolution step is anchored in verified banking SOPs and regulatory guidelines.
+        </p>
+
+        <ul class="rag-highlights">
+          <li>
+            <i class="fas fa-circle-check"></i>
+            <div><strong>Knowledge Base Grounding:</strong> Context is retrieved from 300+ verified banking SOPs before resolution synthesis.</div>
+          </li>
+          <li>
+            <i class="fas fa-circle-check"></i>
+            <div><strong>Relevant Support Procedures:</strong> TF-IDF cosine matching indexes exact articles for ATM, UPI, cards, and KYC.</div>
+          </li>
+          <li>
+            <i class="fas fa-circle-check"></i>
+            <div><strong>Context-Aware Responses:</strong> Guidelines include statutory compensation rules (e.g. RBI T+5 days ATM reversal policy).</div>
+          </li>
+          <li>
+            <i class="fas fa-circle-check"></i>
+            <div><strong>Reduced Hallucination:</strong> Models cannot invent false policies; every generated step quotes verified operational documentation.</div>
+          </li>
+          <li>
+            <i class="fas fa-circle-check"></i>
+            <div><strong>Audit-Ready Consistency:</strong> Support responses remain consistent across all agents and communication channels.</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="rag-flow">
+        <div class="rf-step">
+          <div class="rf-badge">01</div>
+          <div class="rf-text">
+            <strong>Customer Support Ticket</strong>
+            <span>Raw customer grievance ingested into system</span>
+          </div>
+        </div>
+        <div class="rf-step">
+          <div class="rf-badge">02</div>
+          <div class="rf-text">
+            <strong>Knowledge Base Repository</strong>
+            <span>Query matched against 300 verified financial procedures</span>
+          </div>
+        </div>
+        <div class="rf-step">
+          <div class="rf-badge">03</div>
+          <div class="rf-text">
+            <strong>Relevant Banking Articles</strong>
+            <span>Top-ranked procedural guides extracted with similarity scores</span>
+          </div>
+        </div>
+        <div class="rf-step">
+          <div class="rf-badge">04</div>
+          <div class="rf-text">
+            <strong>Context-Augmented Prompt</strong>
+            <span>Grounding documents injected into reasoning pipeline</span>
+          </div>
+        </div>
+        <div class="rf-step" style="border-color:rgba(56,189,248,0.4);background:rgba(37,99,235,0.1);">
+          <div class="rf-badge" style="background:#2563eb;color:#fff;">05</div>
+          <div class="rf-text">
+            <strong>Verified AI Resolution</strong>
+            <span>Audited, step-by-step guidance delivered to end user</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Security Section ── -->
+<section class="section" id="security">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge-chip"><i class="fas fa-lock"></i> Architecture Security</div>
+      <h2>Secure by Design</h2>
+      <p>Built with enterprise security fundamentals to safeguard sensitive customer banking communications and credentials.</p>
+    </div>
+
+    <div class="security-grid">
+      <div class="sec-card">
+        <div class="sec-icon"><i class="fas fa-id-badge"></i></div>
+        <h3>JWT Authentication</h3>
+        <p>Cryptographically signed HS256 JWT tokens with 1-hour expiration and secure HTTP-only cookies to prevent unauthorized tampering.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon"><i class="fas fa-shield-cat"></i></div>
+        <h3>Protected Routes</h3>
+        <p>Every operational interface, API endpoint, and settings controller requires verified authentication before request handling.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon"><i class="fas fa-key"></i></div>
+        <h3>Environment-Based Secrets</h3>
+        <p>Zero hardcoded credentials. All SMTP passwords, Jira tokens, and API secrets are isolated in protected environment variables.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon"><i class="fas fa-network-wired"></i></div>
+        <h3>Controlled Integrations</h3>
+        <p>Strict API boundaries for Atlassian Jira and SMTP email services with graceful offline simulation modes to prevent leakages.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon"><i class="fas fa-database"></i></div>
+        <h3>Isolated SQLite Storage</h3>
+        <p>Dedicated relational database with strict table schemas, parameterized queries, and auto-migrating audit records.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon"><i class="fas fa-user-shield"></i></div>
+        <h3>Role &amp; Session Control</h3>
+        <p>Support agent and supervisor role distinction ensuring clear accountability across all resolved and escalated tickets.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Product Preview: Internal Workspace Output ── -->
+<section class="section" id="preview" style="background:rgba(0,0,0,0.25);">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge-chip"><i class="fas fa-desktop"></i> Internal Workspace Output</div>
+      <h2>Inside the FinCare AI Operator Workspace</h2>
+      <p>Explore the live telemetry, multi-agent reasoning, RAG grounding, and audit records generated for incoming financial support cases.</p>
+    </div>
+
+    <div class="preview-box">
+      <!-- Browser Top Window Bar -->
+      <div class="pb-topbar">
+        <div class="pb-dots">
+          <div class="pb-dot pbd-r"></div>
+          <div class="pb-dot pbd-y"></div>
+          <div class="pb-dot pbd-g"></div>
+        </div>
+        <div class="pb-url"><i class="fas fa-lock" style="font-size:10px;margin-right:6px;color:#10b981;"></i> app.fincare.ai/dashboard/case/FIN-102</div>
+        <div style="font-size:11px;color:#38bdf8;font-weight:700;display:flex;align-items:center;gap:6px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;"></span>
+          LIVE ENVIRONMENT · BANKING77 CORE
+        </div>
+      </div>
+
+      <div class="pb-content">
+        <!-- Sidebar Navigation Preview -->
+        <div class="pb-sidebar">
+          <div style="padding:4px 8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:800;color:#fff;letter-spacing:0.3px;">OPERATOR DESK</div>
+            <div style="font-size:10px;color:var(--text-muted);">Tier-1 &amp; Tier-2 Queue</div>
+          </div>
+          <div class="pbs-item"><i class="fas fa-chart-pie"></i> Dashboard</div>
+          <div class="pbs-item"><i class="fas fa-plus-circle"></i> Add Ticket</div>
+          <div class="pbs-item active"><i class="fas fa-ticket"></i> Active Cases <span class="pbs-count">24</span></div>
+          <div class="pbs-item"><i class="fas fa-robot"></i> AI Agent Lab</div>
+          <div class="pbs-item"><i class="fas fa-book-bookmark"></i> Knowledge Base <span class="pbs-count" style="background:rgba(16,185,129,0.2);color:#34d399;">300+</span></div>
+          <div class="pbs-item"><i class="fas fa-chart-line"></i> Analytics &amp; SLAs</div>
+          <div class="pbs-item"><i class="fas fa-sliders"></i> Settings</div>
+
+          <div style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;">SJ</div>
+              <div style="font-size:11px;line-height:1.2;">
+                <strong style="color:#fff;display:block;">Sarah Jenkins</strong>
+                <span style="color:var(--text-dim);font-size:10px;">Support Lead</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Workspace Area -->
+        <div class="pb-main">
+          <!-- Top Telemetry Row -->
+          <div class="pb-kpi-row" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="pb-kpi">
+              <span>Today's Total Cases</span>
+              <strong>66 Ingested</strong>
+              <small style="font-size:10px;color:#10b981;font-weight:600;"><i class="fas fa-arrow-up"></i> +14% vs avg</small>
+            </div>
+            <div class="pb-kpi">
+              <span>Autonomous Resolution</span>
+              <strong style="color:#10b981;">81.2%</strong>
+              <small style="font-size:10px;color:var(--text-muted);">54 auto-resolved</small>
+            </div>
+            <div class="pb-kpi">
+              <span>Escalated to Jira</span>
+              <strong style="color:#f59e0b;">5 Incidents</strong>
+              <small style="font-size:10px;color:var(--text-muted);">P1 Fraud / Low Conf.</small>
+            </div>
+            <div class="pb-kpi">
+              <span>Pipeline Turnaround</span>
+              <strong style="color:#38bdf8;">2.38s</strong>
+              <small style="font-size:10px;color:var(--text-muted);">RAG + 5-Agent chain</small>
+            </div>
+          </div>
+
+          <!-- Featured Informative Case Output -->
+          <div class="pb-case-output">
+            <div class="pb-case-header">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span class="pb-ticket-id">CASE #FIN-102</span>
+                <span class="pb-badge-p2"><i class="fas fa-bolt"></i> SLA: P2 HIGH</span>
+                <span class="pb-badge-cat"><i class="fas fa-tag"></i> declined_card_payment</span>
+              </div>
+              <div class="pb-status-tag-resolved">
+                <i class="fas fa-circle-check"></i> AI RESOLUTION DISPATCHED
+              </div>
+            </div>
+
+            <!-- Inbound Ticket Text -->
+            <div class="pb-issue-snippet">
+              <strong style="color:#fff;display:block;margin-bottom:3px;font-size:13px;">Customer Grievance:</strong>
+              <p style="color:#cbd5e1;font-size:12.5px;line-height:1.5;">
+                "Customer Priya Sharma (priya.s@example.com): Debit card payment declined at POS merchant terminal, but account debited ₹4,500. Card ending in 4109."
+              </p>
+            </div>
+
+            <!-- Multi-Agent Diagnosis Telemetry -->
+            <div class="pb-telemetry-grid">
+              <div class="pb-telem-card">
+                <span class="pbt-title"><i class="fas fa-brain" style="color:#38bdf8;"></i> DIAGNOSIS AGENT</span>
+                <strong class="pbt-val">declined_card_payment</strong>
+                <span class="pbt-sub">ML Confidence: <strong>92.4%</strong> · Risk: <strong style="color:#f59e0b;">Medium</strong></span>
+              </div>
+              <div class="pb-telem-card">
+                <span class="pbt-title"><i class="fas fa-book-bookmark" style="color:#22d3ee;"></i> RETRIEVAL AGENT</span>
+                <strong class="pbt-val">KB-CRD-042 (POS Drop)</strong>
+                <span class="pbt-sub">Cosine Match: <strong>88.4%</strong> · 300 SOPs</span>
+              </div>
+              <div class="pb-telem-card">
+                <span class="pbt-title"><i class="fas fa-circle-check" style="color:#34d399;"></i> VALIDATION GATE</span>
+                <strong class="pbt-val" style="color:#34d399;">92% Quality Score</strong>
+                <span class="pbt-sub">Threshold &ge; 70% &rarr; <strong style="color:#10b981;">Auto-Resolve</strong></span>
+              </div>
+              <div class="pb-telem-card">
+                <span class="pbt-title"><i class="fas fa-envelope-circle-check" style="color:#a855f7;"></i> DISPATCH STATUS</span>
+                <strong class="pbt-val" style="color:#a855f7;">Customer Email Sent</strong>
+                <span class="pbt-sub">Turnaround: <strong>2.31s</strong> · Audit #AUD-9912</span>
+              </div>
+            </div>
+
+            <!-- Grounded Resolution Plan Output -->
+            <div class="pb-resolution-preview">
+              <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+                <span><i class="fas fa-list-check" style="color:#38bdf8;margin-right:6px;"></i> Verified Action Plan Delivered to Customer:</span>
+                <span style="font-size:10px;color:#94a3b8;font-weight:500;">Grounded in RBI Guidelines DPSS.CO.PD No.629</span>
+              </div>
+              <ol class="pb-res-list">
+                <li><strong>Network Check:</strong> Acquirer switch confirmed communication timeout between POS terminal and gateway. Merchant was not credited.</li>
+                <li><strong>Auto-Reversal:</strong> Debited amount of ₹4,500 has been earmarked for reversal to Savings Account under T+5 reconciliation rules.</li>
+                <li><strong>Dispute Docket:</strong> Temporary dispute reference <code>#DISP-8821</code> registered in Core Banking system.</li>
+                <li><strong>Customer Advisory:</strong> SMS alert dispatched to registered mobile ending in <code>**89</code>. Auto-escalate to Jira if not credited in 48h.</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- Queue Table Preview (Strictly 2 neat queries) -->
+          <div class="pb-table-mock">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <span style="font-size:13px;font-weight:700;color:#fff;"><i class="fas fa-layer-group" style="color:#38bdf8;margin-right:6px;"></i> Live Support Operations Queue</span>
+              <span style="font-size:11px;color:var(--text-muted);"><i class="fas fa-check-double" style="color:#10b981;font-size:10px;margin-right:4px;"></i> 2 active queries · auto-refreshed</span>
+            </div>
+            
+            <div class="ptm-row" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;margin-bottom:10px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+                <span style="background:rgba(37,99,235,0.2);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;flex-shrink:0;">#FIN-101</span>
+                <div style="overflow:hidden;">
+                  <strong style="color:#fff;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">Rahul M. · UPI Settlement Timeout</strong>
+                  <span style="color:#94a3b8;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">₹12,000 deducted without recipient credit · NPCI UDIR protocol active</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                <span class="pbt-pill pbt-p1">P1 Urgent</span>
+                <span style="color:#94a3b8;font-size:11.5px;font-weight:600;">KB-UPI-008</span>
+                <span style="color:#10b981;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:5px;"><i class="fas fa-circle-check"></i> AI Resolved (2.1s)</span>
+              </div>
+            </div>
+
+            <div class="ptm-row" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+                <span style="background:rgba(37,99,235,0.2);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);padding:4px 8px;border-radius:6px;font-size:11px;font-weight:800;flex-shrink:0;">#FIN-102</span>
+                <div style="overflow:hidden;">
+                  <strong style="color:#fff;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">Priya S. · POS Merchant Card Declined</strong>
+                  <span style="color:#94a3b8;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">₹4,500 terminal timeout · Acquirer pre-auth hold earmarked for T+5 auto-reversal</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                <span class="pbt-pill pbt-p2">P2 High</span>
+                <span style="color:#94a3b8;font-size:11.5px;font-weight:600;">KB-CRD-042</span>
+                <span style="color:#10b981;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:5px;"><i class="fas fa-circle-check"></i> AI Resolved (2.3s)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA Section ── -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card">
+      <h2>Ready to transform financial support?</h2>
+      <p style="font-size:18px; margin-bottom:28px;">Start resolving tickets with FinCare AI.</p>
+      <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;">
+        <a href="/signup" class="btn btn-primary" style="font-size:15px;padding:14px 32px;">
+          <i class="fas fa-arrow-right"></i> Get Started
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand">
+          <img src="/static/images/branding/fincare-icon.png" alt="FinCare AI" style="width:36px;height:36px;border-radius:10px;box-shadow:0 4px 14px rgba(37,99,235,0.4);" />
+          <div class="brand-text">
+            <strong>FinCare <em>AI</em></strong>
+            <span>Your Financial Support Desk</span>
+          </div>
+        </div>
+        <p>
+          Your Financial Support Desk
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#security">Security</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="/login">Login</a></li>
+          <li><a href="/signup">Get Started</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help &amp; Support</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 FinCare AI</div>
+      <div>Your AI-Powered Financial Support Desk</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Dynamic ScrollSpy for navbar items (Features, How It Works, Security)
+  document.addEventListener('DOMContentLoaded', function () {
+    const navItems = [
+      { id: 'features', el: document.getElementById('nav-features') },
+      { id: 'how-it-works', el: document.getElementById('nav-how-it-works') },
+      { id: 'security', el: document.getElementById('nav-security') }
+    ];
+
+    function handleScrollSpy() {
+      const scrollY = window.scrollY;
+      const triggerPoint = scrollY + 180;
+      let activeItem = null;
+
+      for (const item of navItems) {
+        const section = document.getElementById(item.id);
+        if (section) {
+          const top = section.offsetTop;
+          const bottom = top + section.offsetHeight;
+          if (triggerPoint >= top && triggerPoint < bottom) {
+            activeItem = item;
+          }
+        }
+      }
+
+      navItems.forEach(item => {
+        if (item.el) {
+          if (activeItem && item.id === activeItem.id) {
+            item.el.classList.add('active');
+          } else {
+            item.el.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    window.addEventListener('scroll', handleScrollSpy, { passive: true });
+    handleScrollSpy();
+  });
+</script>
+
+</body>
+</html>

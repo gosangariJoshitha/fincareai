@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Knowledge Base – FinCare AI</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/branding/fincare-favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/images/branding/fincare-favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/images/branding/fincare-favicon-192.png" />
+  <link rel="shortcut icon" href="/static/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8fafc;
+      --sidebar: #0b152d;
+      --sidebar-w: 248px;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #1d4ed8;
+      --primary-light: #3b82f6;
+      --accent: #2563eb;
+      --accent-cyan: #06b6d4;
+      --green: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+    }
+    body { font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:var(--bg); display:flex; min-height:100vh; color:var(--text); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: padding 0.22s ease;
+    }
+
+    .brand-logo-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      object-fit: contain;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      width: 72px;
+    }
+    .sidebar.collapsed .sidebar-brand {
+      justify-content: center;
+      padding: 20px 10px;
+    }
+    .sidebar.collapsed .brand-text {
+      display: none;
+    }
+    .sidebar.collapsed .nav-item span,
+    .sidebar.collapsed .nav-section-label,
+    .sidebar.collapsed .user-info-text,
+    .sidebar.collapsed .logout-btn span {
+      display: none;
+    }
+    .sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding: 12px;
+      position: relative;
+    }
+    .sidebar.collapsed .nav-item:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 78px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #0f172a;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.15);
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .sidebar.collapsed .user-info {
+      justify-content: center;
+      padding: 4px 0 10px;
+    }
+    .sidebar.collapsed .logout-btn {
+      justify-content: center;
+      padding: 8px 0;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+
+    .brand-name em {
+      color: #38bdf8;
+      font-style: normal;
+    }
+
+    .brand-tagline {
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 18px 12px;
+      overflow-y: auto;
+    }
+
+    .nav-section-label {
+      color: rgba(255, 255, 255, 0.38);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 12px 10px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 13.5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      margin-bottom: 3px;
+    }
+
+    .nav-item i {
+      width: 18px;
+      text-align: center;
+      font-size: 15px;
+      color: #94a3b8;
+      transition: color 0.15s ease;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    .nav-item:hover i {
+      color: #ffffff;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(6, 182, 212, 0.2));
+      color: #ffffff;
+      font-weight: 600;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .nav-item.active i {
+      color: #38bdf8;
+    }
+
+    .sidebar-footer {
+      padding: 16px 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 6px 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .user-info-text strong {
+      color: #ffffff;
+      font-size: 13px;
+      display: block;
+      font-weight: 600;
+    }
+
+    .user-info-text span {
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 11px;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12.5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.18);
+      color: #f87171;
+    }
+
+    /* ── Main Layout ── */
+    html, body {
+      overflow-x: hidden;
+    }
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 28px 36px 40px;
+      width: calc(100% - var(--sidebar-w));
+      max-width: calc(100% - var(--sidebar-w));
+      min-width: 0;
+      box-sizing: border-box;
+      transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body.sidebar-collapsed .main {
+      margin-left: 72px;
+      width: calc(100% - 72px);
+      max-width: calc(100% - 72px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: nowrap;
+      gap: 16px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .topbar-left h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+    }
+
+    .topbar-left p {
+      color: var(--muted);
+      font-size: 13.5px;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      flex-wrap: nowrap;
+    }
+
+    .sidebar-toggle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .sidebar-toggle-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: var(--primary);
+    }
+
+    .btn-icon-topbar {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      font-size: 15px;
+      transition: all 0.15s ease;
+    }
+    .btn-icon-topbar:hover {
+      color: var(--primary);
+      border-color: #bfdbfe;
+      background: #eff6ff;
+    }
+    .notif-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+    .notif-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 340px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      overflow: hidden;
+      animation: menuPop 0.15s ease-out;
+    }
+    @keyframes menuPop {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .notif-menu.open { display: flex; }
+    .notif-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .notif-header strong { font-size: 13.5px; color: var(--text); }
+    .notif-clear-btn { background: none; border: none; color: var(--primary); font-size: 11.5px; font-weight: 600; cursor: pointer; }
+    .notif-list { max-height: 290px; overflow-y: auto; }
+    .notif-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f8fafc;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .notif-item:hover { background: #f8fafc; }
+    .notif-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .notif-item-content { flex: 1; min-width: 0; }
+    .notif-item-title { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .notif-item-desc { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .notif-item-time { font-size: 10px; color: #94a3b8; margin-top: 3px; }
+    .notif-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 12.5px; }
+
+    .btn-profile-topbar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      flex-shrink: 0;
+    }
+    .btn-profile-topbar:hover {
+      transform: scale(1.06);
+    }
+    .topbar-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    }
+    .topbar-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .profile-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 230px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      padding: 6px;
+      animation: menuPop 0.15s ease-out;
+    }
+    .profile-menu.open { display: flex; }
+    .profile-menu-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 4px;
+    }
+    .profile-menu-header strong { display: block; font-size: 13px; color: var(--text); }
+    .profile-menu-header small { color: var(--muted); font-size: 11px; }
+    .profile-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.12s;
+    }
+    .profile-menu-item:hover { background: #f1f5f9; }
+    .profile-menu-divider { height: 1px; background: #f1f5f9; margin: 4px 0; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: #fff;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-card-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-card-header h3 { font-size: 16px; font-weight: 800; color: var(--text); display:flex; align-items:center; gap:8px; }
+    .modal-card-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: #f1f5f9;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card-close:hover { background: #e2e8f0; color: var(--text); }
+    .modal-card-body { padding: 22px; }
+
+    .badge-total { background:#eff6ff; color:var(--primary); font-weight:700; font-size:12px; padding:6px 14px; border-radius:20px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:6px; }
+
+    /* Search & Filter */
+    .filter-bar { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+    .search-box { flex:1; min-width:280px; position:relative; }
+    .search-box i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px; pointer-events:none; }
+    .search-input { width:100%; padding:11px 14px 11px 40px; border:1.5px solid var(--border); border-radius:12px; font-size:13.5px; background:#fff; outline:none; transition:.15s; font-family:inherit; }
+    .search-input:focus { border-color:var(--primary-light); box-shadow:0 0 0 3px rgba(37,99,235,0.12); }
+
+    .category-filter { padding:10px 16px; border:1.5px solid var(--border); border-radius:12px; font-size:13px; background:#fff; font-family:inherit; outline:none; cursor:pointer; }
+    .category-filter:focus { border-color:var(--primary-light); }
+
+    /* Article List */
+    .articles-grid { display:grid; grid-template-columns:1fr; gap:14px; }
+    .kb-card { background:#fff; border:1px solid var(--border); border-radius:14px; padding:18px 22px; transition:all .15s ease; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
+    .kb-card:hover { border-color:#93c5fd; box-shadow:0 4px 14px rgba(37,99,235,0.08); }
+    .kb-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .kb-id { font-size:11px; font-weight:800; color:var(--primary); background:#eff6ff; padding:3px 8px; border-radius:6px; letter-spacing:0.5px; border:1px solid #dbeafe; }
+    .kb-cat { font-size:11.5px; font-weight:600; color:var(--muted); background:#f1f5f9; padding:3px 10px; border-radius:20px; }
+    .kb-title { font-size:15.5px; font-weight:700; color:var(--text); margin-bottom:8px; }
+    .kb-content { font-size:13px; color:#475569; line-height:1.6; white-space:pre-line; max-height:115px; overflow:hidden; position:relative; }
+    .kb-content.expanded { max-height:none; }
+    .expand-btn { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:var(--primary); background:none; border:none; cursor:pointer; margin-top:8px; padding:0; }
+    .expand-btn:hover { text-decoration:underline; }
+
+    /* KB Pagination */
+    .pagination-footer { margin-top: 24px; padding: 14px 20px; border-radius: 14px; background: #fff; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .pagination-buttons { display: inline-flex; gap: 5px; align-items: center; }
+    .page-btn { padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: all .15s ease; cursor: pointer; }
+    .page-btn:hover:not(.disabled):not(.active) { background: #f1f5f9; border-color: #cbd5e1; }
+    .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .page-btn.disabled { color: #94a3b8; background: #f8fafc; border-color: #e2e8f0; cursor: not-allowed; pointer-events: none; }
+    .page-dots { padding: 0 4px; color: var(--muted); font-weight: 700; font-size: 12px; }
+    .btn-reset-kb { padding: 9px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; background: #fff; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-reset-kb:hover { background: #f1f5f9; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <a href="/dashboard" class="sidebar-brand" style="text-decoration:none;" title="FinCare AI — Your Financial Support Desk">
+    <img src="/static/images/branding/fincare-icon.png" alt="FinCare AI" class="brand-logo-img" />
+    <div class="brand-text">
+      <span class="brand-name">FinCare <em>AI</em></span>
+      <span class="brand-tagline">Your Financial Support Desk</span>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="/dashboard" class="nav-item" data-tooltip="Dashboard"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
+    <a href="/add-ticket" class="nav-item" data-tooltip="Add Ticket"><i class="fas fa-plus-circle"></i> <span>Add Ticket</span></a>
+    <a href="/tickets" class="nav-item" data-tooltip="My Tickets"><i class="fas fa-ticket"></i> <span>My Tickets</span></a>
+
+    <div class="nav-section-label">Operations</div>
+    <a href="/ai-agent" class="nav-item" data-tooltip="AI User"><i class="fas fa-robot"></i> <span>AI User</span></a>
+    <a href="/analytics" class="nav-item" data-tooltip="Analytics"><i class="fas fa-chart-line"></i> <span>Analytics</span></a>
+    <a href="/knowledge-base" class="nav-item active" data-tooltip="Knowledge Base"><i class="fas fa-book-bookmark"></i> <span>Knowledge Base</span></a>
+
+    <div class="nav-section-label">Workspace</div>
+    <a href="/profile" class="nav-item" data-tooltip="Profile"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
+    <a href="/settings" class="nav-item" data-tooltip="Settings"><i class="fas fa-sliders"></i> <span>Settings</span></a>
+    <a href="javascript:void(0)" onclick="openHelpModal()" class="nav-item" data-tooltip="Help & Support"><i class="fas fa-circle-question"></i> <span>Help &amp; Support</span></a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="/profile" style="text-decoration:none;display:block;" title="View Profile">
+      <div class="user-info">
+        <div class="user-avatar">{{ current_user.name[0]|upper if current_user and current_user.name else 'J' }}</div>
+        <div class="user-info-text">
+          <strong>{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}</strong>
+          <span>{{ current_user.role|capitalize if current_user and current_user.role else 'User' }}</span>
+        </div>
+      </div>
+    </a>
+    <a href="/logout" class="logout-btn" title="Logout"><i class="fas fa-arrow-right-from-bracket"></i> <span>Logout</span></a>
+  </div>
+</aside>
+
+<!-- ── Main Content ── -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left" style="display:flex;align-items:center;gap:12px;">
+      <div>
+        <h1>FinCare Knowledge Base</h1>
+        <p>Verified financial support procedures, regulatory guidelines and resolution protocols.</p>
+      </div>
+    </div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:12px;">
+      <div class="badge-total">
+        <i class="fas fa-book-bookmark"></i> {{ total_articles }} Verified Articles
+      </div>
+
+      <!-- Topbar Notification Bell -->
+      <div class="notif-dropdown-wrap" style="position:relative;">
+        <button type="button" class="btn-icon-topbar" onclick="toggleNotifDropdown(event)" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="notifBadge" style="{% if not unread_notification_count or unread_notification_count == 0 %}display:none;{% endif %}">{{ unread_notification_count if unread_notification_count else '' }}</span>
+        </button>
+        <div class="notif-menu" id="notifMenu">
+          <div class="notif-header">
+            <strong>Notifications</strong>
+            <button type="button" class="notif-clear-btn" onclick="clearNotifs(event)">Mark all read</button>
+          </div>
+          <div class="notif-list" id="notifList">
+            {% if recent_notifications %}
+              {% for n in recent_notifications %}
+              <a href="javascript:void(0)" 
+                 class="notif-item {{ 'read' if n.is_read else 'unread' }}" 
+                 onclick="handleNotifClick(event, {{ n.id }}, '{{ ('/ticket/' ~ n.ticket_id) if n.ticket_id else '/tickets' }}')">
+                <div class="notif-item-icon" style="background:{{ n.color }}18;color:{{ n.color }};">
+                  <i class="fas {{ n.icon }}"></i>
+                </div>
+                <div class="notif-item-content">
+                  <div class="notif-item-title">{{ n.title }} {% if not n.is_read %}<span class="unread-dot"></span>{% endif %}</div>
+                  <div class="notif-item-desc">{{ n.detail }}</div>
+                  <div class="notif-item-time">{{ n.time }}</div>
+                </div>
+              </a>
+              {% endfor %}
+            {% else %}
+              <div class="notif-empty">No unread notifications</div>
+            {% endif %}
+          </div>
+          <a href="/tickets" class="notif-footer-link" style="padding:10px 16px;text-align:center;background:#f8fafc;color:var(--primary);font-size:12px;font-weight:700;text-decoration:none;border-top:1px solid #f1f5f9;display:block;">View All Tickets &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Topbar Profile Dropdown (Just Letter Icon) -->
+      <div class="profile-dropdown-wrap" style="position:relative;">
+        <button type="button" class="btn-profile-topbar" onclick="toggleProfileMenu(event)" title="User Profile">
+          <div class="topbar-avatar">{{ current_user.name[0]|upper if current_user and current_user.name else 'J' }}</div>
+        </button>
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-menu-header">
+            <strong>{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}</strong>
+            <small>{{ current_user.email if current_user and current_user.email else 'joshithagosangari@gmail.com' }}</small>
+          </div>
+          <a href="/profile" class="profile-menu-item">
+            <i class="fas fa-user-circle"></i> Profile
+          </a>
+          <a href="/settings" class="profile-menu-item">
+            <i class="fas fa-sliders"></i> Account Settings
+          </a>
+          <a href="/profile#notifications" class="profile-menu-item">
+            <i class="fas fa-bell"></i> Notification Settings
+          </a>
+          <div class="profile-menu-divider"></div>
+          <a href="/logout" class="profile-menu-item" style="color:#ef4444;">
+            <i class="fas fa-arrow-right-from-bracket"></i> Sign Out
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form method="GET" action="/knowledge-base" class="filter-bar">
+    <input type="hidden" name="page" value="1"/>
+    <input type="hidden" name="per_page" value="{{ per_page }}"/>
+    <div class="search-box">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="text" name="search" id="kbSearch" class="search-input" placeholder="Search knowledge base articles (e.g. ATM dispute, UPI failed, card stolen)..." value="{{ search_query }}">
+    </div>
+    <select name="category" id="catFilter" class="category-filter" onchange="this.form.submit()">
+      <option value="ALL" {% if category_filter == 'ALL' %}selected{% endif %}>All Categories ({{ categories|length }})</option>
+      {% for cat in categories %}
+      <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="page-btn active" style="padding:10px 18px;border-radius:12px;font-size:13px;border:none;"><i class="fas fa-filter"></i> Filter</button>
+    {% if search_query or (category_filter and category_filter != 'ALL') %}
+    <a href="/knowledge-base" class="btn-reset-kb"><i class="fas fa-rotate-left"></i> Reset</a>
+    {% endif %}
+  </form>
+
+  <div class="articles-grid" id="articlesContainer">
+    {% if articles %}
+      {% for entry in articles %}
+      <div class="kb-card">
+        <div class="kb-header">
+          <span class="kb-id">{{ entry.id }}</span>
+          <span class="kb-cat">{{ entry.category }}</span>
+        </div>
+        <h3 class="kb-title">{{ entry.title }}</h3>
+        <div class="kb-content" id="c-{{ entry.id }}">{{ entry.content }}</div>
+        <button type="button" class="expand-btn" onclick="toggleExpand('c-{{ entry.id }}', this)">Read Procedure &darr;</button>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:48px 20px;text-align:center;color:var(--muted);">
+        <i class="fas fa-book-open" style="font-size:36px;color:#cbd5e1;margin-bottom:12px;display:block;"></i>
+        <strong style="font-size:16px;color:var(--text);display:block;margin-bottom:6px;">No articles match your query</strong>
+        <span>Try searching for different keywords or select 'All Categories'.</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Server-Side Pagination Controls -->
+  <div class="pagination-footer">
+    <div style="font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <span>
+        Showing <strong>{{ ((page - 1) * per_page + 1) if total_matching > 0 else 0 }}</strong> to <strong>{{ [page * per_page, total_matching]|min }}</strong> of <strong>{{ total_matching }}</strong> articles
+        {% if category_filter and category_filter != 'ALL' %}(in <em>{{ category_filter }}</em>){% endif %}
+      </span>
+      <div style="display:inline-flex;align-items:center;gap:6px;">
+        <label for="kbPageSize" style="font-size:12px;color:var(--muted);">Per page:</label>
+        <select id="kbPageSize" class="category-filter" style="padding:4px 8px;font-size:12px;height:30px;" onchange="changeKbPageSize(this.value)">
+          <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+          <option value="12" {% if per_page == 12 %}selected{% endif %}>12</option>
+          <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
+          <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="pagination-buttons">
+      {% if has_prev %}
+      <a href="{{ url_for('knowledge_base', page=page-1, per_page=per_page, category=category_filter, search=search_query) }}" class="page-btn"><i class="fas fa-chevron-left"></i> Prev</a>
+      {% else %}
+      <span class="page-btn disabled"><i class="fas fa-chevron-left"></i> Prev</span>
+      {% endif %}
+
+      {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+        <span class="page-btn active">{{ p }}</span>
+        {% elif p <= 2 or p >= total_pages - 1 or (p >= page - 1 and p <= page + 1) %}
+        <a href="{{ url_for('knowledge_base', page=p, per_page=per_page, category=category_filter, search=search_query) }}" class="page-btn">{{ p }}</a>
+        {% elif (p == 3 and page > 3) or (p == total_pages - 2 and page < total_pages - 2) %}
+        <span class="page-dots">…</span>
+        {% endif %}
+      {% endfor %}
+
+      {% if has_next %}
+      <a href="{{ url_for('knowledge_base', page=page+1, per_page=per_page, category=category_filter, search=search_query) }}" class="page-btn">Next <i class="fas fa-chevron-right"></i></a>
+      {% else %}
+      <span class="page-btn disabled">Next <i class="fas fa-chevron-right"></i></span>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+<script>
+  function toggleExpand(id, btn) {
+    const el = document.getElementById(id);
+    if (el.classList.contains('expanded')) {
+      el.classList.remove('expanded');
+      btn.innerHTML = 'Read Procedure &darr;';
+    } else {
+      el.classList.add('expanded');
+      btn.innerHTML = 'Show Less &uarr;';
+    }
+  }
+
+  function changeKbPageSize(size) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', size);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+  }
+
+  // Sidebar Collapse / Expand Persistence
+  (function initSidebar() {
+    const isCollapsed = localStorage.getItem('fincare_sidebar_collapsed') === 'true';
+    if (isCollapsed) {
+      document.querySelector('.sidebar')?.classList.add('collapsed');
+      document.body.classList.add('sidebar-collapsed');
+    }
+  })();
+
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    const collapsed = sidebar.classList.toggle('collapsed');
+    document.body.classList.toggle('sidebar-collapsed', collapsed);
+    localStorage.setItem('fincare_sidebar_collapsed', collapsed);
+  }
+
+  // Topbar Dropdowns
+  function toggleNotifDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('profileMenu')?.classList.remove('open');
+    document.getElementById('notifMenu')?.classList.toggle('open');
+  }
+
+  function toggleProfileMenu(e) {
+    e.stopPropagation();
+    document.getElementById('notifMenu')?.classList.remove('open');
+    document.getElementById('profileMenu')?.classList.toggle('open');
+  }
+
+  async function handleNotifClick(e, notifId, redirectUrl) {
+    if (e) e.stopPropagation();
+    try {
+      await fetch('/api/notifications/' + notifId + '/read', { method: 'POST' });
+    } catch(err) {}
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
+    }
+  }
+
+  async function clearNotifs(e) {
+    if (e) e.stopPropagation();
+    try {
+      const res = await fetch('/api/notifications/read-all', { method: 'POST' });
+      const data = await res.json();
+      if (data && (data.status === 'ok' || data.success)) {
+        const badge = document.getElementById('notifBadge');
+        if (badge) badge.style.display = 'none';
+        const list = document.getElementById('notifList');
+        if (list) list.innerHTML = '<div class="notif-empty">All notifications marked as read ✓</div>';
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async function fetchUnreadCount() {
+    try {
+      const res = await fetch('/api/notifications/unread-count');
+      const data = await res.json();
+      if (data && (data.status === 'ok' || data.success)) {
+        const badge = document.getElementById('notifBadge');
+        if (badge) {
+          if (data.unread_count > 0) {
+            badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+            badge.style.display = 'flex';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      }
+    } catch(err) {}
+  }
+  setInterval(fetchUnreadCount, 25000);
+
+  document.addEventListener('click', function() {
+    document.getElementById('notifMenu')?.classList.remove('open');
+    document.getElementById('profileMenu')?.classList.remove('open');
+  });
+
+  // Modal Handlers
+  function openHelpModal() {
+    document.getElementById('helpModal')?.classList.add('open');
+  }
+  function closeHelpModal() {
+    document.getElementById('helpModal')?.classList.remove('open');
+  }
+
+  function openProfileModal() {
+    document.getElementById('profileModal')?.classList.add('open');
+  }
+  function closeProfileModal() {
+    document.getElementById('profileModal')?.classList.remove('open');
+  }
+</script>
+
+<!-- Help & Support Modal -->
+<div class="modal-overlay" id="helpModal" onclick="if(event.target===this)closeHelpModal()">
+  <div class="modal-card">
+    <div class="modal-card-header">
+      <h3><i class="fas fa-circle-question" style="color:var(--primary);"></i> Help &amp; Support Reference</h3>
+      <button type="button" class="modal-card-close" onclick="closeHelpModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-card-body">
+      <div style="font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:16px;">
+        FinCare AI is an enterprise financial support automation platform operating a 5-Agent Multi-Agent resolution architecture.
+      </div>
+      <div style="background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;">
+        <strong style="display:block;font-size:12.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Resolution SLAs by Priority</strong>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px solid #f1f5f9;">
+          <span><strong>P1 Critical</strong> (Unauthorized / Fund Loss)</span>
+          <span style="color:#ef4444;font-weight:700;">Within 4 Hours</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px solid #f1f5f9;">
+          <span><strong>P2 High</strong> (Declined POS / Transfer)</span>
+          <span style="color:#f59e0b;font-weight:700;">Within 24 Hours</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;">
+          <span><strong>P3 Standard</strong> (General Queries / Statement)</span>
+          <span style="color:#10b981;font-weight:700;">Within 48 Hours</span>
+        </div>
+      </div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.5;">
+        <strong>Statutory Ombudsman:</strong> RBI CMS Portal (<a href="https://cms.rbi.org.in" target="_blank" style="color:var(--primary);font-weight:600;">cms.rbi.org.in</a>)<br/>
+        <strong>Internal Helpline:</strong> Ext. 8004 / <a href="mailto:support@fincare.ai" style="color:var(--primary);">support@fincare.ai</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal-overlay" id="profileModal" onclick="if(event.target===this)closeProfileModal()">
+  <div class="modal-card">
+    <div class="modal-card-header">
+      <h3><i class="fas fa-user-circle" style="color:var(--primary);"></i> User Profile Details</h3>
+      <button type="button" class="modal-card-close" onclick="closeProfileModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-card-body">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-cyan));color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;box-shadow:0 4px 14px rgba(37,99,235,0.3);">
+          {{ current_user.name[0]|upper if current_user and current_user.name else 'J' }}
+        </div>
+        <div>
+          <h4 style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:2px;">{{ current_user.name if current_user and current_user.name else 'Joshitha Gosangari' }}</h4>
+          <span style="display:inline-block;padding:2px 10px;border-radius:20px;background:#eff6ff;color:var(--primary);font-size:11.5px;font-weight:700;border:1px solid #bfdbfe;">
+            User
+          </span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div style="background:#f8fafc;padding:12px;border-radius:10px;border:1px solid var(--border);">
+          <small style="color:var(--muted);font-size:10.5px;font-weight:700;text-transform:uppercase;display:block;">Email Address</small>
+          <strong style="font-size:12.5px;color:var(--text);word-break:break-all;">{{ current_user.email if current_user and current_user.email else 'joshithagosangari@gmail.com' }}</strong>
+        </div>
+        <div style="background:#f8fafc;padding:12px;border-radius:10px;border:1px solid var(--border);">
+          <small style="color:var(--muted);font-size:10.5px;font-weight:700;text-transform:uppercase;display:block;">Clearance Level</small>
+          <strong style="font-size:12.5px;color:#10b981;">Tier 2 Diagnostic</strong>
+        </div>
+      </div>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:12px 16px;font-size:12.5px;color:#15803d;display:flex;align-items:center;gap:10px;">
+        <i class="fas fa-shield-halved" style="font-size:18px;"></i>
+        <span>Authorized for AI-assisted auto-resolution &amp; Jira issue escalations.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

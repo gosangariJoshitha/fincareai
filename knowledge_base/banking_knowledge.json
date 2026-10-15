@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "UPI Payment Failed or Amount Debited",
+    "category": "UPI",
+    "content": "Check the UPI transaction status in the official banking application. Confirm whether the account was debited. Check whether the transaction has been reversed. If the amount is not reversed within the applicable bank process, raise a transaction dispute through the bank's official support channel."
+  },
+  {
+    "id": 2,
+    "title": "UPI Payment Pending",
+    "category": "UPI",
+    "content": "Open the official banking application and check the UPI transaction status. Do not repeat the payment immediately if the original transaction is still pending. Save the transaction reference and contact official bank support if the pending status does not resolve."
+  },
+  {
+    "id": 3,
+    "title": "ATM Cash Not Received",
+    "category": "ATM",
+    "content": "Check the ATM transaction status in the official banking application. Confirm whether the account was debited. Keep the ATM location, date, time and transaction reference. If the cash was not received and the amount remains debited, raise an ATM cash dispute through the bank."
+  },
+  {
+    "id": 4,
+    "title": "Debit Card Payment Declined",
+    "category": "Debit Card",
+    "content": "Check card validity and available balance. Verify transaction limits and whether the relevant transaction type is enabled in the official banking application. If the payment continues to fail, contact the bank using its official support channel."
+  },
+  {
+    "id": 5,
+    "title": "Forgot Banking Password",
+    "category": "Authentication",
+    "content": "Use the official banking application or website. Select the password recovery option. Complete the bank's approved identity verification process and create a new password. Never share passwords, PINs or one-time passwords with anyone."
+  },
+  {
+    "id": 6,
+    "title": "Net Banking Login Problem",
+    "category": "Net Banking",
+    "content": "Verify the official banking website or application is being used. Check connectivity and account credentials. Use the official password recovery process if required. Never provide login credentials or one-time passwords to support staff through unverified channels."
+  },
+  {
+    "id": 7,
+    "title": "Unauthorized or Suspicious Transaction",
+    "category": "Fraud",
+    "content": "Treat an unrecognized transaction as a sensitive case. Do not disclose PIN, password, card security codes or one-time passwords. Contact the bank immediately through an official channel and follow the bank's transaction dispute and account-security process."
+  },
+  {
+    "id": 8,
+    "title": "Fund Transfer Failed",
+    "category": "Fund Transfer",
+    "content": "Check the transfer status and transaction reference in the official banking application. Confirm whether the account was debited and whether the amount was returned. If the transfer remains unresolved, contact official bank support with the transaction reference."
+  }
+]

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up – FinCare AI</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/branding/fincare-favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/images/branding/fincare-favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/images/branding/fincare-favicon-192.png" />
+  <link rel="shortcut icon" href="/static/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-950: #070d1e;
+      --navy-900: #0b152d;
+      --navy-800: #102144;
+      --primary: #1d4ed8;
+      --primary-light: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --focus-ring: rgba(37, 99, 235, 0.18);
+    }
+
+    html, body {
+      height: 100vh;
+      min-height: 100vh;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      background: var(--navy-950);
+      color: var(--text-main);
+      overflow-y: hidden;
+    }
+
+    /* ── Left Hero Panel (58% Desktop Split, Preserved Onboarding Suite) ── */
+    .left-panel {
+      width: 58%;
+      flex: 0 0 58%;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at 15% 20%, #1e3a8a 0%, #0b152d 55%, #060b17 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 40px;
+      position: relative;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      box-sizing: border-box;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      width: 560px;
+      height: 560px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.16) 0%, transparent 70%);
+      top: -120px;
+      left: -100px;
+      pointer-events: none;
+    }
+
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, transparent 70%);
+      bottom: -60px;
+      right: -60px;
+      pointer-events: none;
+    }
+
+    .brand-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 2;
+    }
+
+    .brand-logo-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+    }
+
+    .brand-meta h2 {
+      font-size: 23px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.6px;
+      line-height: 1.15;
+    }
+
+    .brand-meta h2 em {
+      color: #38bdf8;
+      font-style: normal;
+    }
+
+    .brand-meta span {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .left-hero-content {
+      z-index: 2;
+      width: 100%;
+      max-width: 100%;
+      margin: 10px 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .left-headline {
+      font-size: 34px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.15;
+      letter-spacing: -0.8px;
+      margin-bottom: 8px;
+    }
+
+    .left-headline span {
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .left-sub {
+      color: #94a3b8;
+      font-size: 13.5px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+      max-width: 620px;
+    }
+
+    /* Spread Feature Cards Horizontally */
+    .feature-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      z-index: 2;
+      width: 100%;
+    }
+
+    .feature-card {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px 14px;
+      backdrop-filter: blur(12px);
+      transition: all 0.22s ease;
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .fc-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .fc-icon.cyan   { background: rgba(6, 182, 212, 0.15); color: #38bdf8; }
+    .fc-icon.blue   { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .fc-icon.purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+
+    .fc-text strong {
+      display: block;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      line-height: 1.25;
+    }
+
+    .fc-text span {
+      color: #94a3b8;
+      font-size: 11.5px;
+      line-height: 1.4;
+      display: block;
+    }
+
+    .left-footer {
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #94a3b8;
+      font-size: 11.5px;
+      font-weight: 600;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 12px;
+    }
+
+    /* ── Right Authentication Panel (42% Desktop Split, Single Screen Fit) ── */
+    .auth-right {
+      width: 42%;
+      flex: 0 0 42%;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 48px;
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.25);
+      box-sizing: border-box;
+    }
+
+    .auth-form-container {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    /* ── Inside-Form Logo & Brand Header ── */
+    .auth-brand-header {
+      margin-bottom: 12px;
+    }
+
+    .auth-brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      text-decoration: none;
+    }
+
+    .auth-brand-logo img {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      object-fit: contain;
+    }
+
+    .auth-brand-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.4px;
+    }
+
+    .auth-brand-name .accent {
+      color: #2563eb;
+    }
+
+    .auth-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+
+    .auth-subtitle {
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    /* Flash / Error Notices */
+    .flash-msg {
+      padding: 6px 10px;
+      border-radius: 7px;
+      margin-bottom: 10px;
+      font-size: 11.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      line-height: 1.35;
+    }
+
+    .flash-msg.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .flash-msg.success {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* ── Form Groups & Inputs ── */
+    .auth-form {
+      width: 100%;
+    }
+
+    .form-group {
+      margin-bottom: 9px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 3px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap i.lead-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .input-wrap input,
+    .input-wrap select {
+      width: 100%;
+      height: 38px;
+      padding: 0 13px 0 38px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 12.5px;
+      font-family: inherit;
+      color: #0f172a;
+      background: #f8fafc;
+      transition: all 0.2s ease;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .input-wrap select {
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 12px top 50%;
+      background-size: 9px auto;
+    }
+
+    .input-wrap input:focus,
+    .input-wrap select:focus {
+      border-color: var(--primary-light);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+
+    .input-wrap input::placeholder {
+      color: #94a3b8;
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 6px;
+      transition: color 0.15s ease;
+    }
+
+    .toggle-pw:hover {
+      color: #334155;
+    }
+
+    /* Password Strength Meter */
+    .pw-strength {
+      margin-top: 3px;
+    }
+
+    .pw-strength-bar {
+      height: 2.5px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 2px;
+    }
+
+    .pw-strength-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .pw-strength-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10.5px;
+    }
+
+    .pw-strength-label {
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .pw-req-hint {
+      color: #94a3b8;
+      font-size: 10px;
+    }
+
+    /* Terms Row */
+    .terms-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      font-size: 11px;
+      color: #64748b;
+      margin: 8px 0 10px;
+      line-height: 1.35;
+    }
+
+    .terms-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .terms-row a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .terms-row a:hover {
+      text-decoration: underline;
+    }
+
+    /* Primary Submit Button */
+    .btn-submit {
+      width: 100%;
+      height: 38px;
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: #ffffff;
+      border: none;
+      border-radius: 9px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, #1e40af, #1d4ed8);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 16px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-submit.is-loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    /* Divider & Secondary Nav */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0 6px;
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    .switch-link {
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .switch-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: 4px;
+      transition: color 0.15s ease;
+    }
+
+    .switch-link a:hover {
+      color: #1e40af;
+      text-decoration: underline;
+    }
+
+    /* ── Responsive Behavior ── */
+    @media (max-width: 1080px) {
+      .auth-right {
+        padding: 40px 36px;
+      }
+    }
+
+    @media (max-width: 960px) {
+      body {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+        background: #f8fafc;
+      }
+
+      .left-panel {
+        display: none;
+      }
+
+      .auth-right {
+        width: 100%;
+        flex: 1;
+        height: auto;
+        min-height: 100vh;
+        max-height: none;
+        padding: 36px 24px;
+        box-shadow: none;
+        background: #ffffff;
+      }
+
+      .auth-form-container {
+        max-width: 440px;
+        padding: 0;
+        margin: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Left Hero Promotional Panel (Preserved 58% Desk) ── -->
+<div class="left-panel">
+  <a href="/" class="brand-top" style="text-decoration:none;">
+    <img src="/static/images/branding/fincare-icon.png" alt="FinCare AI" style="width:44px;height:44px;border-radius:12px;box-shadow:0 8px 24px rgba(37,99,235,0.4);" />
+    <div class="brand-meta">
+      <h2>FinCare <em>AI</em></h2>
+      <span>Your Financial Support Desk</span>
+    </div>
+  </a>
+
+  <div class="left-hero-content">
+    <div class="hero-badge">✦ Enterprise Support Onboarding Suite</div>
+    <h1 class="left-headline">Enterprise<br /><span>Support Onboarding</span><br />Suite</h1>
+    <p class="left-sub">Empower your financial operations team with verified AI intelligence, multi-agent resolution pipelines, and real-time banking compliance.</p>
+
+    <div class="feature-cards">
+      <div class="feature-card">
+        <div class="fc-icon cyan"><i class="fas fa-user-shield"></i></div>
+        <div class="fc-text">
+          <strong>Agent Provisioning</strong>
+          <span>Role-based agent authentication, session auditing, and PCI-DSS compliance guardrails.</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="fc-icon blue"><i class="fas fa-brain"></i></div>
+        <div class="fc-text">
+          <strong>5-Agent Architecture</strong>
+          <span>Diagnosis, RAG policy retrieval, automated resolution, validation &amp; escalation.</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="fc-icon purple"><i class="fas fa-network-wired"></i></div>
+        <div class="fc-text">
+          <strong>Live Jira &amp; Mail Sync</strong>
+          <span>Automated bi-directional Jira ticket escalation and customer resolution email dispatches.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="left-footer">
+    <img src="/static/images/branding/fincare-icon.png" alt="FinCare AI" style="width:20px;height:20px;border-radius:5px;" />
+    <span>FinCareAI Platform – Your Financial Support Desk</span>
+  </div>
+</div>
+
+<!-- ── Right Authentication Panel (Spacious 42% Centered Form) ── -->
+<div class="auth-right">
+  <div class="auth-form-container">
+    <!-- Centered In-Form Branding Header -->
+    <div class="auth-brand-header">
+      <a href="/" class="auth-brand-logo">
+        <img src="/static/images/branding/fincare-icon.png" alt="FinCare AI" />
+        <span class="auth-brand-name">FinCare <span class="accent">AI</span></span>
+      </a>
+      <h1 class="auth-title">Create your FinCare AI account</h1>
+      <p class="auth-subtitle">Join your financial support workspace and resolve customer issues faster with AI.</p>
+    </div>
+
+    <!-- Flashed messages & server error/success alerts -->
+    {% if error %}
+      <div class="flash-msg error">
+        <i class="fas fa-circle-xmark"></i>
+        <span>{{ error }}</span>
+      </div>
+    {% endif %}
+    {% if success %}
+      <div class="flash-msg success">
+        <i class="fas fa-circle-check"></i>
+        <span>{{ success }}</span>
+      </div>
+    {% endif %}
+
+    <form method="POST" action="/signup" class="auth-form" id="signupForm" onsubmit="handleSignupSubmit(event)">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <div class="input-wrap">
+          <i class="fas fa-user lead-icon"></i>
+          <input type="text" id="name" name="name" placeholder="Rahul Sharma" required autocomplete="name" />
+        </div>
+      </div>
+
+      <input type="hidden" name="role" value="user" />
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrap">
+          <i class="fas fa-envelope lead-icon"></i>
+          <input type="email" id="email" name="email" placeholder="rahul@fincare.ai" required autocomplete="email" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="department">Department / Support Unit</label>
+        <div class="input-wrap">
+          <i class="fas fa-building-columns lead-icon"></i>
+          <select id="department" name="department" required>
+            <option value="" disabled selected>Select your operational department</option>
+            <option value="Banking Operations &amp; Support">Banking Operations &amp; Support</option>
+            <option value="Customer Grievance &amp; Escalations">Customer Grievance &amp; Escalations</option>
+            <option value="Fraud &amp; Risk Investigation">Fraud &amp; Risk Investigation</option>
+            <option value="Card Services &amp; Disputes">Card Services &amp; Disputes</option>
+            <option value="Digital Payments (UPI / IMPS / NEFT)">Digital Payments (UPI / IMPS / NEFT)</option>
+            <option value="Core Banking &amp; Account Services">Core Banking &amp; Account Services</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock lead-icon"></i>
+          <input type="password" id="password" name="password" placeholder="Min. 8 characters" required autocomplete="new-password" oninput="checkStrength(this.value)" />
+          <i class="fas fa-eye toggle-pw" id="togglePwIcon" onclick="togglePasswordVisibility('password', 'togglePwIcon')" title="Toggle password visibility"></i>
+        </div>
+        <div class="pw-strength">
+          <div class="pw-strength-bar"><div class="pw-strength-fill" id="strengthFill"></div></div>
+          <div class="pw-strength-meta">
+            <span class="pw-strength-label" id="strengthLabel">Enter a secure password</span>
+            <span class="pw-req-hint">✓ 8+ chars required</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock lead-icon"></i>
+          <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required autocomplete="new-password" />
+          <i class="fas fa-eye toggle-pw" id="toggleConfirmPwIcon" onclick="togglePasswordVisibility('confirm_password', 'toggleConfirmPwIcon')" title="Toggle password visibility"></i>
+        </div>
+      </div>
+
+      <div class="terms-row">
+        <input type="checkbox" id="terms" required />
+        <label for="terms">I agree to the <a href="javascript:void(0)" onclick="alert('FinCare AI strictly adheres to RBI & PCI-DSS compliance frameworks for enterprise financial data protection.')">Terms of Service</a> and <a href="javascript:void(0)" onclick="alert('All banking communications and ticket analyses are end-to-end encrypted with zero unauthorized telemetry.')">Security Guidelines</a></label>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <i class="fas fa-user-plus"></i> <span>Create Account</span>
+      </button>
+    </form>
+
+    <div class="divider">OR</div>
+
+    <p class="switch-link">
+      Already have an account? <a href="/login">Login</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  function togglePasswordVisibility(inputId, iconId) {
+    const pw = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (!pw || !icon) return;
+    if (pw.type === 'password') {
+      pw.type = 'text';
+      icon.className = 'fas fa-eye-slash toggle-pw';
+    } else {
+      pw.type = 'password';
+      icon.className = 'fas fa-eye toggle-pw';
+    }
+  }
+
+  function checkStrength(val) {
+    const fill  = document.getElementById('strengthFill');
+    const label = document.getElementById('strengthLabel');
+    if (!fill || !label) return;
+    let score = 0;
+    if (val.length >= 8)          score++;
+    if (/[A-Z]/.test(val))        score++;
+    if (/[0-9]/.test(val))        score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const configs = [
+      { pct: '0%',   bg: '#e2e8f0', text: 'Enter a secure password' },
+      { pct: '25%',  bg: '#ef4444', text: 'Weak' },
+      { pct: '50%',  bg: '#f97316', text: 'Fair' },
+      { pct: '75%',  bg: '#eab308', text: 'Good' },
+      { pct: '100%', bg: '#22c55e', text: 'Strong password' },
+    ];
+    const c = configs[score] || configs[0];
+    fill.style.width      = c.pct;
+    fill.style.background = c.bg;
+    label.textContent     = c.text;
+  }
+
+  function handleSignupSubmit(e) {
+    const p1 = document.getElementById('password')?.value;
+    const p2 = document.getElementById('confirm_password')?.value;
+    if (p1 && p2 && p1 !== p2) {
+      e.preventDefault();
+      alert('Passwords do not match. Please verify your passwords.');
+      return;
+    }
+    const btn = document.getElementById('submitBtn');
+    if (btn) {
+      btn.classList.add('is-loading');
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>Creating Account...</span>';
+    }
+  }
+</script>
+</body>
+</html>

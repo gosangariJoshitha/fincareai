@@ -1,0 +1,260 @@
+[
+  {
+    "timestamp": "2026-10-08T09:55:15",
+    "customer_name": "Meera Singh",
+    "customer_email": "meera@example.com",
+    "query": "My credit card was charged twice for the same transaction",
+    "category": "Credit Card",
+    "risk": "LOW",
+    "confidence": 51.15,
+    "status": "ESCALATE",
+    "jira": {
+      "success": true,
+      "ticket_id": "BAN-101",
+      "ticket_url": "https://supportpilot2026.atlassian.net/browse/BAN-101",
+      "message": "Jira ticket BAN-101 generated successfully"
+    },
+    "email": {
+      "success": true,
+      "message": "Email notification sent"
+    },
+    "steps": [
+      "Check card validity and available balance",
+      "Verify transaction limits and whether the relevant transaction type is enabled in the official banking application",
+      "If the payment continues to fail, contact the bank using its official support channel."
+    ]
+  },
+  {
+    "timestamp": "2026-10-08T09:47:07",
+    "customer_name": "Deepak Kumar",
+    "customer_email": "deepak@example.com",
+    "query": "Unauthorized credit card debit of Rs 5000",
+    "category": "Credit Card",
+    "risk": "LOW",
+    "confidence": 51.15,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira returned HTTP 400: The target project doesn't exist or you don't have permission to create issues in it.; project: The target project doesn't exist or you don't have permission to create issues in it."
+    },
+    "email": {
+      "success": true,
+      "message": "Email notification sent"
+    },
+    "steps": [
+      "Check card validity and available balance",
+      "Verify transaction limits and whether the relevant transaction type is enabled in the official banking application",
+      "If the payment continues to fail, contact the bank using its official support channel."
+    ]
+  },
+  {
+    "timestamp": "2026-10-08T09:35:12",
+    "customer_name": "Ankit Verma",
+    "customer_email": "ankit.verma@example.com",
+    "query": "I cannot withdraw cash from the ATM machine",
+    "category": "ATM",
+    "risk": "LOW",
+    "confidence": 54.94,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira returned HTTP 400. The target project doesn't exist or you don't have permission to create issues in it.; project: The target project doesn't exist or you don't have permission to create issues in it."
+    },
+    "email": {
+      "success": true,
+      "message": "Email notification sent"
+    },
+    "steps": [
+      "Check the ATM transaction status in the official banking application",
+      "Confirm whether the account was debited",
+      "Keep the ATM location, date, time and transaction reference",
+      "If the cash was not received and the amount remains debited, raise an ATM cash dispute through the bank."
+    ]
+  },
+  {
+    "timestamp": "2026-10-08T09:23:16",
+    "customer_name": "Test User",
+    "customer_email": "test@example.com",
+    "query": "Forgot netbanking login password",
+    "category": "Authentication",
+    "risk": "LOW",
+    "confidence": 63.75,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira returned HTTP 400. The target project doesn't exist or you don't have permission to create issues in it.; project: The target project doesn't exist or you don't have permission to create issues in it."
+    },
+    "email": {
+      "success": true,
+      "message": "Email notification sent"
+    },
+    "steps": [
+      "Use the official banking application or website",
+      "Select the password recovery option",
+      "Complete the bank's approved identity verification process and create a new password",
+      "Never share passwords, PINs or one-time passwords with anyone."
+    ]
+  },
+  {
+    "timestamp": "2026-10-07T14:07:31",
+    "customer_name": "Test User",
+    "customer_email": "adharshgm5@gmail.com",
+    "query": "An unauthorized transaction of Rs 15000 was made on my card without my permission!",
+    "category": "Fraud",
+    "risk": "HIGH",
+    "confidence": 52.77,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira returned HTTP 400. The target project doesn't exist or you don't have permission to create issues in it.; project: The target project doesn't exist or you don't have permission to create issues in it."
+    },
+    "email": {
+      "success": true,
+      "message": "Email notification sent"
+    },
+    "steps": [
+      "Treat an unrecognized transaction as a sensitive case",
+      "Do not disclose PIN, password, card security codes or one-time passwords",
+      "Contact the bank immediately through an official channel and follow the bank's transaction dispute and account-security process."
+    ]
+  },
+  {
+    "timestamp": "2026-10-07T13:56:37",
+    "customer_name": "Rahul",
+    "customer_email": "rahul@example.com",
+    "query": "My UPI payment failed",
+    "category": "UPI",
+    "risk": "LOW",
+    "confidence": 79.94,
+    "status": "AUTO_RESOLVE",
+    "jira": null,
+    "email": {
+      "success": false,
+      "message": "Email is not configured. Set SMTP_EMAIL and SMTP_PASSWORD in .env, then restart the app."
+    },
+    "steps": [
+      "Check the UPI transaction status in the official banking application",
+      "Confirm whether the account was debited",
+      "Check whether the transaction has been reversed",
+      "If the amount is not reversed within the applicable bank process, raise a transaction dispute through the bank's official support channel."
+    ]
+  },
+  {
+    "timestamp": "2026-10-07T13:41:22",
+    "customer_name": "Rahul Sharma",
+    "email": null,
+    "query": "A problem related to banking services, transactions, payments, or account access that requires investigation and resolution.",
+    "category": "Account",
+    "risk": "LOW",
+    "confidence": 53.34,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira configuration not available"
+    },
+    "steps": [
+      "Verify the official banking website or application is being used",
+      "Check connectivity and account credentials",
+      "Use the official password recovery process if required",
+      "Never provide login credentials or one-time passwords to support staff through unverified channels."
+    ]
+  },
+  {
+    "timestamp": "2026-10-07T11:19:53",
+    "customer_name": "Rahul",
+    "email": null,
+    "query": "My UPI payment failed but money was deducted",
+    "category": "UPI",
+    "risk": "LOW",
+    "confidence": 48.05,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira configuration not available"
+    }
+  },
+  {
+    "timestamp": "2026-10-07T11:25:31",
+    "customer_name": "Rahul",
+    "email": null,
+    "query": "My UPI payment failed but money was deducted from my account.",
+    "category": "UPI",
+    "risk": "LOW",
+    "confidence": 48.75,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira configuration not available"
+    }
+  },
+  {
+    "timestamp": "2026-10-07T11:26:04",
+    "customer_name": "Rahul",
+    "email": null,
+    "query": "My UPI payment failed but money was deducted from my account.",
+    "category": "UPI",
+    "risk": "LOW",
+    "confidence": 48.75,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira configuration not available"
+    }
+  },
+  {
+    "timestamp": "2026-10-07T11:26:06",
+    "customer_name": "Rahul",
+    "email": null,
+    "query": "My UPI payment failed but money was deducted from my account.",
+    "category": "UPI",
+    "risk": "LOW",
+    "confidence": 48.75,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira configuration not available"
+    }
+  },
+  {
+    "timestamp": "2026-10-07T11:26:06",
+    "customer_name": "Rahul",
+    "email": null,
+    "query": "My UPI payment failed but money was deducted from my account.",
+    "category": "UPI",
+    "risk": "LOW",
+    "confidence": 48.75,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira configuration not available"
+    }
+  },
+  {
+    "timestamp": "2026-10-07T11:26:06",
+    "customer_name": "Rahul",
+    "email": null,
+    "query": "My UPI payment failed but money was deducted from my account.",
+    "category": "UPI",
+    "risk": "LOW",
+    "confidence": 48.75,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira configuration not available"
+    }
+  },
+  {
+    "timestamp": "2026-10-07T12:07:43",
+    "customer_name": "Test User",
+    "email": null,
+    "query": "My UPI payment failed",
+    "category": "UPI",
+    "risk": "LOW",
+    "confidence": 47.43,
+    "status": "ESCALATE",
+    "jira": {
+      "success": false,
+      "message": "Jira configuration not available"
+    }
+  }
+]
